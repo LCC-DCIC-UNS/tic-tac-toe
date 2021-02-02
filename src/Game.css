@@ -3,10 +3,6 @@ body {
   margin: 20px;
 }
 
-ol, ul {
-  padding-left: 30px;
-}
-
 .board-row:after {
   clear: both;
   content: "";
