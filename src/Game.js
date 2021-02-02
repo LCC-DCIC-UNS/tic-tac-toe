@@ -1,4 +1,4 @@
-import './Game.css';
+import styles from './Game.module.css';
 import React from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
@@ -56,14 +56,12 @@ class Game extends React.Component {
       status = 'Winner: ' + this.state.status;
     }
     return (
-      <div className="game">
-        <div className="game-board">
-          <Board
-            squares={this.state.squares}
-            onClick={i => this.handleClick(i)}
-          />
-        </div>
-        <div className="game-info">
+      <div className={styles.game}>
+        <Board
+          squares={this.state.squares}
+          onClick={i => this.handleClick(i)}
+        />
+        <div className={styles.gameInfo}>
           <div>{status}</div>
         </div>
       </div>
