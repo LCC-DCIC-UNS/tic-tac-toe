@@ -11,7 +11,7 @@ class Game extends React.Component {
     this.state = {
       squares: Array(9).fill('-'),
       xIsNext: true,
-      status: '?',
+      status: '?',  // values: 'X' (X is the winner), 'O' (O is the winner), 'T' (tie), '?' (game in progress)
       waiting: false
     };
     this.pengine = new PengineClient();
@@ -23,6 +23,9 @@ class Game extends React.Component {
     if (this.state.status !== '?' || this.state.waiting) {
       return;
     }
+    // Build Prolog query to make a move and get the updated game status.
+    // Calls to PengineClient.stringify() are to explicitly quote terms for player and board cells ("X", "Y" and "-")
+    // The query will be like: put("X",0,["-","-","-","-","-","-","-","-","-"],BoardRes),gameStatus(BoardRes, Status) 
     const squaresS = PengineClient.stringify(this.state.squares);
     const queryS = "put(" + PengineClient.stringify(this.state.xIsNext ? "X" : "O") + "," + i + "," + squaresS + ",BoardRes),"
       + "gameStatus(BoardRes, Status)";
@@ -46,13 +49,13 @@ class Game extends React.Component {
   }
 
   render() {
-    let status;
+    let statusText;
     if (this.state.status === '?') {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    } else if (this.state.status === 'tie') {
-      status = 'Tie!'
+      statusText = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    } else if (this.state.status === 'T') {
+      statusText = 'Tie!'
     } else {
-      status = 'Winner: ' + this.state.status;
+      statusText = 'Winner: ' + this.state.status;
     }
     return (
       <div className="game">
@@ -61,7 +64,7 @@ class Game extends React.Component {
           onClick={i => this.handleClick(i)}
         />
         <div className="gameInfo">
-          {status}
+          {statusText}
         </div>
       </div>
     );
