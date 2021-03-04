@@ -1,18 +1,10 @@
 import React from 'react';
-import styles from './Board.module.css';
-
-function Square(props) {
-    return (
-        <button className={styles.square} onClick={props.onClick}>
-            {props.value !== '-' ? props.value : null}
-        </button>
-    );
-}
+import Square from './Square';
 
 class Board extends React.Component {
     render() {
         return (
-            <div className={styles.board}>
+            <div className="board">
                 {this.props.squares.map((square, i) =>
                     <Square
                         value={square}
