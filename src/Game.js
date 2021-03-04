@@ -6,7 +6,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill('-'),
+      squares: Array(9).fill(null),
       xIsNext: true,
       status: '?'  // values: 'X' (X is the winner), 'O' (O is the winner), 'T' (tie), '?' (game in progress)
     };
@@ -26,11 +26,11 @@ class Game extends React.Component {
     ];
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
-      if (squares[a] !== '-' && squares[a] === squares[b] && squares[a] === squares[c]) {
+      if (squares[a] !== null && squares[a] === squares[b] && squares[a] === squares[c]) {
         return squares[a];
       }
     }
-    if (squares.every(square => square !== '-')) {
+    if (squares.every(square => square !== null)) {
       return 'T';
     }
     return '?';
@@ -38,7 +38,7 @@ class Game extends React.Component {
 
   handleClick(i) {
     // No action on click if game has ended or clicked cell is not empty.
-    if (this.state.status !== '?' || this.state.squares[i] !== '-') {
+    if (this.state.status !== '?' || this.state.squares[i] !== null) {
       return;
     }
     // Make the move, and update game status
