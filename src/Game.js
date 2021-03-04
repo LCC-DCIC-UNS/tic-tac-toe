@@ -49,13 +49,14 @@ class Game extends React.Component {
   }
 
   render() {
+    const status = this.state.status;
     let statusText;
-    if (this.state.status === '?') {
+    if (status === '?') {
       statusText = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    } else if (this.state.status === 'T') {
+    } else if (status === 'T') {
       statusText = 'Tie!'
     } else {
-      statusText = 'Winner: ' + this.state.status;
+      statusText = 'Winner: ' + status;
     }
     return (
       <div className="game">
