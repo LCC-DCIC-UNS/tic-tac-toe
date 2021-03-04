@@ -19,8 +19,8 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
-    // No action on click if game has ended, clicked cell is not empty, or we are waiting for game status.
-    if (this.state.status !== '?' || this.state.squares[i] !== '-'  || this.state.waiting) {
+    // No action on click if game has ended or we are waiting for game status.
+    if (this.state.status !== '?' || this.state.waiting) {
       return;
     }
     // Build Prolog query to make a move and get the updated game status.
@@ -41,6 +41,7 @@ class Game extends React.Component {
           waiting: false
         });
       } else {
+        // Prolog query will fail when the user clicked on a non empty cell.
         this.setState({
           waiting: false
         });
