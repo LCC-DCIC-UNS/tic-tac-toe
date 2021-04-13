@@ -9,12 +9,17 @@ Implementación de un tic-tac-toe interactivo, usando React del lado del cliente
 
 - Levantar el servidor ejecutando en SWI-Prolog el `run.pl` en la carpeta `pengines_server`: 
 
-  `cd pengines_server` 
+  `cd pengines_server`\
+  `swipl run.pl`
   
-  `swipl run.pl` 
-  
-  o haciendo doble click sobre el `run.pl`.\
-El servidor escuchará en http://localhost:3030.
+  o haciendo doble click sobre el `run.pl`.
+
+  Aclaración: no hacer `swipl pengines_server/run.pl` porque algunas referencias luego no funcionan.
+
+  La primera vez que se ejecute el run.pl se pedirá definir un username y un password para acceder a la consola web admin del servidor, elegir cualquiera (por ejemplo, username: 'lcc' y password: 'lccdcic'), pero no dejar vacíos.
+
+  El servidor escuchará en http://localhost:3030\
+  Consola web admin: http://localhost:3030/admin/server.html
 
 - La carpeta `pengines-master/apps/proylcc` contiene el código prolog del tic tac toe. Cada vez que se modifica este código es necesario bajar y volver a levantar el servidor para que se reflejen los cambios.
 
