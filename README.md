@@ -7,10 +7,16 @@ Implementación de un tic-tac-toe interactivo, usando React del lado del cliente
 ### Setup y ejecución del servidor Pengines
 - [Descargar](https://www.swi-prolog.org/Download.html) e instalar el SWI-Prolog.
 
-- Descargar la implementación del servidor Pengines (pengines-master.zip) provista en la materia. La carpeta `pengines-master/apps/proylcc` contiene el código prolog del tic tac toe.
+- Levantar el servidor ejecutando en SWI-Prolog el `run.pl` en la carpeta `pengines_server`: 
 
-- Levantar el servidor ejecutando `pengines-master/run.pl` en SWI-Prolog: correr `swipl run.pl` o doble click sobre el `run.pl`.\
+  `cd pengines_server` 
+  
+  `swipl run.pl` 
+  
+  o haciendo doble click sobre el `run.pl`.\
 El servidor escuchará en http://localhost:3030.
+
+- La carpeta `pengines-master/apps/proylcc` contiene el código prolog del tic tac toe. Cada vez que se modifica este código es necesario bajar y volver a levantar el servidor para que se reflejen los cambios.
 
 ### Setup y ejecución de la aplicación React
 
