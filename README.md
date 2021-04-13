@@ -32,6 +32,8 @@ Implementación de un tic-tac-toe interactivo, usando React del lado del cliente
 
     `npm start`
 
-    para correr la app en modo desarrollo.\
-- Abrir [http://localhost:3000](http://localhost:3000) para ver la aplicación en el browser.\
+    para correr la app en modo desarrollo.
+
+- Abrir [http://localhost:3000](http://localhost:3000) para ver la aplicación en el browser.
+
 - La página se refresca automáticamente cuando cambia el código.
