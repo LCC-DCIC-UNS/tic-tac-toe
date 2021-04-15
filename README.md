@@ -18,8 +18,9 @@ Implementación de un tic-tac-toe interactivo, usando React del lado del cliente
 
   La primera vez que se ejecute el run.pl se pedirá definir un username y un password para acceder a la consola web admin del servidor, elegir cualquiera (por ejemplo, username: 'lcc' y password: 'lccdcic'), pero no dejar vacíos.
 
-  El servidor escuchará en http://localhost:3030\
-  Consola web admin: http://localhost:3030/admin/server.html
+- El servidor escuchará en http://localhost:3030
+
+- Ir a http://localhost:3030/admin/server.html para ver la consola web admin.
 
 - La carpeta `pengines-master/apps/proylcc` contiene el código prolog del tic tac toe. Cada vez que se modifica este código es necesario bajar y volver a levantar el servidor para que se reflejen los cambios.
 
@@ -27,10 +28,19 @@ Implementación de un tic-tac-toe interactivo, usando React del lado del cliente
 
 - Descargar una versión reciente de [Node.js](https://nodejs.org/en/).
 
-- En el directorio del proyecto, correr
+- Ejecutar 
+
+  `npm install` 
+
+  en el directorio del proyecto (`tic-tac-toe`) para instalar las dependencias (librerías)
+localmente, en la carpeta `node_modules`.
+
+- Ejecutar
 
     `npm start`
 
-    para correr la app en modo desarrollo.\
-Abrir [http://localhost:3000](http://localhost:3000) para ver la aplicación en el browser.\
-    La página se refresca automáticamente cuando cambia el código.
+    en el directorio del proyecto para correr la app en modo desarrollo.
+
+- Abrir [http://localhost:3000](http://localhost:3000) para ver la aplicación en el browser.
+
+- La página se refresca automáticamente cuando cambia el código.
