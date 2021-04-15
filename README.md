@@ -28,11 +28,18 @@ Implementación de un tic-tac-toe interactivo, usando React del lado del cliente
 
 - Descargar una versión reciente de [Node.js](https://nodejs.org/en/).
 
-- En el directorio del proyecto, correr
+- Ejecutar 
+
+  `npm install` 
+
+  en el directorio del proyecto (`tic-tac-toe`) para instalar las dependencias (librerías)
+localmente, en la carpeta `node_modules`.
+
+- Ejecutar
 
     `npm start`
 
-    para correr la app en modo desarrollo.
+    en el directorio del proyecto para correr la app en modo desarrollo.
 
 - Abrir [http://localhost:3000](http://localhost:3000) para ver la aplicación en el browser.
 
