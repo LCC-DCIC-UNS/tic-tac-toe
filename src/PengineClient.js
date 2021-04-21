@@ -3,26 +3,21 @@ class PengineClient {
     queryId = -1;
     queryCallbacks = {};
 
-    constructor() {
+    /**
+    * handleCreate is the callback for Pengine server creation
+    */
+    constructor(handleCreate) {
         this.query = this.query.bind(this);
         this.handleSuccess = this.handleSuccess.bind(this);
         this.pengine = new window.Pengine({
             server: "http://localhost:3030/pengine",
             application: "proylcc",
-            oncreate: this.handleCreate,
+            oncreate: handleCreate,
             onsuccess: this.handleSuccess,
             onfailure: this.handleFailure,
             onerror: this.handleError,
             destroy: false
         });
-    }
-
-    /**
-    * Callback for Pengine server creation
-    */
-
-    handleCreate() {
-    
     }
 
     /**

@@ -9,39 +9,45 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill('-'),
-      xIsNext: true,
-      status: '?',  // values: 'X' (X is the winner), 'O' (O is the winner), 'T' (tie), '?' (game in progress)
+      grid: null,
       waiting: false
     };
-    this.pengine = new PengineClient();
     this.handleClick = this.handleClick.bind(this);
+    this.handlePengineCreate = this.handlePengineCreate.bind(this);
+    this.pengine = new PengineClient(this.handlePengineCreate);
   }
 
-  handleClick(i) {
-    // No action on click if game has ended or we are waiting for game status.
-    if (this.state.status !== '?' || this.state.waiting) {
+  handlePengineCreate() {
+    const queryS = 'init(PistasFilas, PistasColumns, Grilla)';
+    this.pengine.query(queryS, (success, response) => {
+      if (success) {
+        this.setState({
+          grid: response['Grilla']
+        });
+      }
+    });
+  }
+
+  handleClick(i, j) {
+    // No action on click if we are waiting.
+    if (this.state.waiting) {
       return;
     }
-    // Build Prolog query to make a move and get the updated game status.
-    // Calls to PengineClient.stringify() are to explicitly quote terms for player and board cells ('X', 'Y' and '-')
-    // The query will be like: put('X',0,['-','-','-','-','-','-','-','-','-'],BoardRes),gameStatus(BoardRes, Status) 
-    const squaresS = PengineClient.stringify(this.state.squares);
-    const queryS = 'put(' + PengineClient.stringify(this.state.xIsNext ? 'X' : 'O') + ',' + i + ',' + squaresS + ',BoardRes),'
-      + 'gameStatus(BoardRes, Status)';
+    // Build Prolog query to make the move, which will look as follows:
+    // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+    const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
+    const queryS = 'put("#",' + '[' + i + ',' + j + ']' 
+    + ',' + '[], [],' + squaresS + ', GrillaRes, FilaSat, ColSat)';
     this.setState({
       waiting: true
     });
     this.pengine.query(queryS, (success, response) => {
       if (success) {
         this.setState({
-          squares: response['BoardRes'],
-          xIsNext: !this.state.xIsNext,
-          status: response['Status'],
+          grid: response['GrillaRes'],
           waiting: false
         });
       } else {
-        // Prolog query will fail when the user clicked on a non empty cell.
         this.setState({
           waiting: false
         });
@@ -50,20 +56,15 @@ class Game extends React.Component {
   }
 
   render() {
-    const status = this.state.status;
-    let statusText;
-    if (status === '?') {
-      statusText = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    } else if (status === 'T') {
-      statusText = 'Tie!'
-    } else {
-      statusText = 'Winner: ' + status;
+    if (this.state.grid === null) {
+      return null;
     }
+    const statusText = 'Keep playing!';
     return (
       <div className="game">
         <Board
-          squares={this.state.squares}
-          onClick={i => this.handleClick(i)}
+          grid={this.state.grid}
+          onClick={(i, j) => this.handleClick(i,j)}
         />
         <div className="gameInfo">
           {statusText}

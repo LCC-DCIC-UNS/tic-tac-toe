@@ -1,7 +1,6 @@
 :- module(proylcc,
 	[  
-		put/4,
-		gameStatus/2
+		put/8
 	]).
 
 :-use_module(library(lists)).
@@ -21,38 +20,12 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% put(+Player, +Position, +Board, -ResBoard)
+% put(+Contenido, +Pos, +PistasFilas, +PistasColumnas, +Grilla, -GrillaRes, -FilaSat, -ColSat).
 %
 
-put(Player, Pos, Board, ResBoard):-
-	replace("-", Pos, Player, Board, ResBoard).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% gameStatus(+Board, +Status)
-%
-
-gameStatus(Board, Winner):-
-	Lines = [
-    	[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-		[0, 3, 6],
-		[1, 4, 7],
-		[2, 5, 8],
-		[0, 4, 8],
-		[2, 4, 6]
-  	],
-  	member([C1, C2, C3], Lines),
-	nth0(C1, Board, Winner),
-	Winner \= "-",
-	nth0(C2, Board, Winner),
-	nth0(C3, Board, Winner),
-	!.  
-
-gameStatus(Board, "?"):-
-	member("-", Board),
-	!.
-
-gameStatus(_Board, "T").
+put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, 0, 0):-
+	replace(Row, RowN, NewRow, Grilla, NewGrilla),
+	(replace(Cell, ColN, _, Row, NewRow),
+	Cell == Contenido 
+		; 
+	replace(_Cell, ColN, Contenido, Row, NewRow)).
