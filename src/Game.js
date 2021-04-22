@@ -36,8 +36,8 @@ class Game extends React.Component {
     // Build Prolog query to make the move, which will look as follows:
     // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
     const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
-    const queryS = 'put("#",' + '[' + i + ',' + j + ']' 
-    + ',' + '[], [],' + squaresS + ', GrillaRes, FilaSat, ColSat)';
+    const queryS = 'put("#", [' + i + ',' + j + ']' 
+    + ', [], [],' + squaresS + ', GrillaRes, FilaSat, ColSat)';
     this.setState({
       waiting: true
     });
