@@ -22,6 +22,40 @@ body {
   display: grid;
 }
 
+.horizontal {
+  display: flex;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.rowClues {
+  display: grid;
+}
+
+.colClues {
+  display: grid;
+}
+
+.clue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #b9d6e0;
+  border-radius: 8px;
+  margin: 5px;
+}
+
+.clue div {
+  margin: 2px
+}
+
+.colClues .clue {
+  flex-direction: column;
+}
+
 .game {
   display: flex;
   flex-direction: row;

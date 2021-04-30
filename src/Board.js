@@ -1,25 +1,57 @@
 import React from 'react';
 import Square from './Square';
+import Clue from './Clue';
 
 class Board extends React.Component {
     render() {
         const numOfRows = this.props.grid.length;
         const numOfCols = this.props.grid[0].length;
+
+        const rowClues = this.props.rowClues;
+        const colClues = this.props.colClues;
+
         return (
-            <div className="board" 
-                 style={{
-                    gridTemplateRows: 'repeat(' + numOfRows + ', 40px)',
-                    gridTemplateColumns: 'repeat(' + numOfCols + ', 40px)'
-                 }}>
-                {this.props.grid.map((row, i) =>
-                    row.map((cell, j) =>
-                        <Square
-                            value={cell}
-                            onClick={() => this.props.onClick(i, j)}
-                            key={i + j}
-                        />
-                    )
-                )}
+            <div className="vertical">
+                <div
+                    className="colClues"
+                    style={{
+                        gridTemplateRows: '60px',
+                        gridTemplateColumns: '60px repeat(' + numOfCols + ', 40px)'
+                    }}
+                >
+                    <div>{/* top-left corner square */}</div>
+                    {colClues.map((clue, i) =>
+                        <Clue clue={clue} key={i}/>
+                    )}
+                </div>
+                <div className="horizontal">
+                    <div
+                        className="rowClues"
+                        style={{
+                            gridTemplateRows: 'repeat(' + numOfRows + ', 40px)',
+                            gridTemplateColumns: '60px'
+                        }}
+                    >
+                        {rowClues.map((clue, i) =>
+                            <Clue clue={clue} key={i}/>
+                        )}
+                    </div>
+                    <div className="board"
+                        style={{
+                            gridTemplateRows: 'repeat(' + numOfRows + ', 40px)',
+                            gridTemplateColumns: 'repeat(' + numOfCols + ', 40px)'
+                        }}>
+                        {this.props.grid.map((row, i) =>
+                            row.map((cell, j) =>
+                                <Square
+                                    value={cell}
+                                    onClick={() => this.props.onClick(i, j)}
+                                    key={i + j}
+                                />
+                            )
+                        )}
+                    </div>
+                </div>
             </div>
         );
     }
