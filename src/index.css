@@ -3,25 +3,10 @@ body {
   margin: 20px;
 }
 
-.square {
-  background: #fff;
-  border: 1px solid #999;
-  font-size: 24px;
-  font-weight: bold;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-}
-
-.square:focus {
-  outline: none;
-}
-
 .board {
   display: grid;
-  grid-template-columns: repeat(3, 40px);
-  grid-template-rows: repeat(3, 40px);
+  grid-template-columns: repeat(14, 40px);
+  grid-template-rows: repeat(14, 40px);
 }
 
 .game {
@@ -31,4 +16,47 @@ body {
 
 .gameInfo {
   margin-left: 20px;
+}
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+}
+
+.buttonsPanel {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto;
+  grid-gap: 15px;
+  justify-content: center;
+}
+
+.colorBtn {
+  height: 40px;
+  width: 40px;
+  border: none;
+  cursor: pointer;
+}
+
+.colorBtn:hover {
+  outline: none;
+  border: 2px solid black;
+}
+
+.turnsPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  font-size: 20px;
+  color: darkblue;
+}
+
+.turnsLab {
+  text-transform: uppercase;
+}
+
+.turnsNum {
+  margin-top: 10px;
 }

@@ -1,11 +1,10 @@
 import React from 'react';
+import { colorToCss } from './Game';
 
 class Square extends React.Component {
     render() {
         return (
-            <button className="square" onClick={this.props.onClick}>
-                {this.props.value !== '-' ? this.props.value : null}
-            </button>
+            <div className="square" style={{ backgroundColor: colorToCss(this.props.value) }} />
         );
     }
 }
