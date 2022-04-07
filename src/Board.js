@@ -9,7 +9,7 @@ class Board extends React.Component {
                     row.map((cell, j) =>
                         <Square
                             value={cell}
-                            key={i + j}
+                            key={i + "." + j}
                         />
                     )
                 )}
