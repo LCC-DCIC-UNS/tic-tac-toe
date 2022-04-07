@@ -3,65 +3,26 @@ import PengineClient from './PengineClient';
 import Board from './Board';
 
 /**
- * Representation of color enumerate as object where each property key defines an enum value (a color), and the
- * associated property value (the string) defines the color name.
- *
- * Values: RED, VIOLET, PINK, GREEN, BLUE, YELLOW
+ * List of colors.
  */
 
-const colors = Object.freeze({
-  RED: "red",
-  VIOLET: "violet",
-  PINK: "pink",
-  GREEN: "green",
-  BLUE: "blue",
-  YELLOW: "yellow"
-});
+const colors = ["r", "v", "p", "g", "b", "y"];  // red, violet, pink, green, blue, yellow
 
 /**
  * Returns the CSS representation of the received color.
  */
 
 export function colorToCss(color) {
-  return colors[color];
-}
-
-/**
- * Returns the Prolog representation of the received color
- */
-
-function colorToProlog(color) {
-  return colors[color].charAt(0);
-}
-
-/**
- * Returns the color in colors enum associated to pColor, in Prolog representation.
- */
-
-function colorFromProlog(pColor) {
-  for (const color in colors) {
-    if (colorToProlog(color) == pColor)
-      return color;
+  switch (color) {
+    case "r": return "red";
+    case "v": return "violet";
+    case "p": return "pink";
+    case "g": return "green";
+    case "b": return "blue";
+    case "y": return "yellow";
   }
-  return null;
+  return color;
 }
-
-/**
- * Transforms grid to Prolog representation 
- */
-
-function gridToProlog(grid) {
-  return grid.map(row => row.map(cell => colorToProlog(cell)));
-}
-
-/**
- * Transforms grid from Prolog representation 
- */
-
-function gridFromProlog(grid) {
-  return grid.map(row => row.map(cell => colorFromProlog(cell)));
-}
-
 class Game extends React.Component {
 
   pengine;
@@ -84,7 +45,7 @@ class Game extends React.Component {
     this.pengine.query(queryS, (success, response) => {
       if (success) {
         this.setState({
-          grid: gridFromProlog(response['Grid'])
+          grid: response['Grid']
         });
       }
     });
@@ -96,31 +57,30 @@ class Game extends React.Component {
       return;
     }
     // Build Prolog query to apply the color flick.
-    // Calls to PengineClient.stringify() are to explicitly quote terms for player and board cells.
     // The query will be like:
-    // flick([["g","g","b","g","v","y","p","v","b","p","v","p","v","r"],
-    //        ["r","r","p","p","g","v","v","r","r","b","g","v","p","r"],
-    //        ["b","v","g","y","b","g","r","g","p","g","p","r","y","y"],
-    //        ["r","p","y","y","y","p","y","g","r","g","y","v","y","p"],
-    //        ["y","p","y","v","y","g","g","v","r","b","v","y","r","g"],
-    //        ["r","b","v","g","b","r","y","p","b","p","y","r","y","y"],
-    //        ["p","g","v","y","y","r","b","r","v","r","v","y","p","y"],
-    //        ["b","y","v","g","r","v","r","g","b","y","b","y","p","g"],
-    //        ["r","b","b","v","g","v","p","y","r","v","r","y","p","g"],
-    //        ["v","b","g","v","v","r","g","y","b","b","b","b","r","y"],
-    //        ["v","v","b","r","p","b","g","g","p","p","b","y","v","p"],
-    //        ["r","p","g","y","v","y","r","b","v","r","b","y","r","v"],
-    //        ["r","b","b","v","p","y","p","r","b","g","p","y","b","r"],
-    //        ["v","g","p","b","v","v","g","g","g","b","v","g","g","g"]],"r", Grid)
-    const gridS = PengineClient.stringify(gridToProlog(this.state.grid));
-    const queryS = "flick(" + gridS + "," + PengineClient.stringify(colorToProlog(color)) + ", Grid)";
+    // flick([[g,g,b,g,v,y,p,v,b,p,v,p,v,r],
+    //        [r,r,p,p,g,v,v,r,r,b,g,v,p,r],
+    //        [b,v,g,y,b,g,r,g,p,g,p,r,y,y],
+    //        [r,p,y,y,y,p,y,g,r,g,y,v,y,p],
+    //        [y,p,y,v,y,g,g,v,r,b,v,y,r,g],
+    //        [r,b,v,g,b,r,y,p,b,p,y,r,y,y],
+    //        [p,g,v,y,y,r,b,r,v,r,v,y,p,y],
+    //        [b,y,v,g,r,v,r,g,b,y,b,y,p,g],
+    //        [r,b,b,v,g,v,p,y,r,v,r,y,p,g],
+    //        [v,b,g,v,v,r,g,y,b,b,b,b,r,y],
+    //        [v,v,b,r,p,b,g,g,p,p,b,y,v,p],
+    //        [r,p,g,y,v,y,r,b,v,r,b,y,r,v],
+    //        [r,b,b,v,p,y,p,r,b,g,p,y,b,r],
+    //        [v,g,p,b,v,v,g,g,g,b,v,g,g,g]],r, Grid)
+    const gridS = JSON.stringify(this.state.grid).replaceAll('"', "");
+    const queryS = "flick(" + gridS + "," + color + ", Grid)";
     this.setState({
       waiting: true
     });
     this.pengine.query(queryS, (success, response) => {
       if (success) {
         this.setState({
-          grid: gridFromProlog(response['Grid']),
+          grid: response['Grid'],
           turns: this.state.turns + 1,
           waiting: false
         });
@@ -141,7 +101,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="leftPanel">
           <div className="buttonsPanel">
-            {Object.keys(colors).map(color =>
+            {colors.map(color =>
               <button
                 className="colorBtn"
                 style={{ backgroundColor: colorToCss(color) }}
