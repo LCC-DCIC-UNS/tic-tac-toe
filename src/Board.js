@@ -5,12 +5,15 @@ import { valueInPos, numberToColor, connectionInPath, posInPath, isAdyacent, num
 class Board extends React.Component {
 
     onSquareClick(pos) {
-        console.log(pos);
         const { path, onPathChange, onDone } = this.props;
         if (path.length === 0) {
             onPathChange([pos]);
         } else if (equalPos(path[path.length - 1], pos)) {
-            onDone();
+            if (path.length === 1) {    // Clicked the first and unique pos in the path, so stop collecting the path.
+                onPathChange([]);
+            } else {
+                onDone();
+            }
         }
     }
 
@@ -35,13 +38,16 @@ class Board extends React.Component {
             <div className="board">
                 <div className="squares">
                     {grid.map((num, i) => {
-                        const pos = [Math.floor(i / numOfColumns), i % numOfColumns];
-                        console.log(pos);
-                        return <Square
-                            value={num}
-                            key={i}
-                            onClick={() => this.onSquareClick(pos)}
-                            onMouseEnter={() => this.onSquareHover(pos)} />;
+                        const pos = [Math.floor(i / numOfColumns), i % numOfColumns];                        
+                        return (
+                            <Square
+                                value={num}
+                                onClick={() => this.onSquareClick(pos)}
+                                onMouseEnter={() => this.onSquareHover(pos)}
+                                className={path.length === 0 ? "riseOnHover" : equalPos(path[path.length - 1], pos) ? "rise" : undefined}
+                                key={i}
+                            />
+                        );
                     })}
                 </div>
                 <div className="horizontalConnectors">
@@ -118,6 +124,20 @@ class Board extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    onKeydown(e) {
+        if (e.key === "Escape") {
+            this.props.onPathChange([]);
+        }
+    }
+
+    componentDidMount() {
+        window.addEventListener("keydown", this.onKeydown);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.onKeydown);
     }
 }
 

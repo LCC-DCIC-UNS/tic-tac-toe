@@ -47,6 +47,14 @@ body {
   cursor: pointer;
 }
 
+.rise {
+  margin: 2px;
+}
+
+.riseOnHover:hover {
+  margin: 2px;
+}
+
 .horizontalConnectors {
   position: absolute;
   top: 0;

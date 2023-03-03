@@ -3,10 +3,10 @@ import { numberToColor } from './util';
 
 class Square extends React.Component {
     render() {
-        const { value, onClick, onMouseEnter } = this.props;
+        const { value, onClick, onMouseEnter, className } = this.props;
         return (
             <div
-                className={"square"}
+                className={"square" + (className ? " " + className : "")}
                 style={{ backgroundColor: numberToColor(this.props.value) }}
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}

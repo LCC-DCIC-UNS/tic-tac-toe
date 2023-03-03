@@ -1,6 +1,7 @@
 import React from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import { joinResult } from './util';
 
 class Game extends React.Component {
 
@@ -63,7 +64,7 @@ class Game extends React.Component {
       if (success) {
         this.setState({
           grid: response['Grid'],
-          score: this.state.score + 1,
+          score: this.state.score + joinResult(this.state.path, this.state.grid),
           path: [],
           waiting: false
         });
