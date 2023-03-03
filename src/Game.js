@@ -2,27 +2,6 @@ import React from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 
-/**
- * List of colors.
- */
-
-const colors = ["r", "v", "p", "g", "b", "y"];  // red, violet, pink, green, blue, yellow
-
-/**
- * Returns the CSS representation of the received color.
- */
-
-export function colorToCss(color) {
-  switch (color) {
-    case "r": return "red";
-    case "v": return "violet";
-    case "p": return "pink";
-    case "g": return "green";
-    case "b": return "blue";
-    case "y": return "yellow";
-  }
-  return color;
-}
 class Game extends React.Component {
 
   pengine;
@@ -30,12 +9,14 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      turns: 0,
       grid: null,
+      score: 0,
+      // path: [[2, 0], [3, 0], [4, 1], [3, 1], [2, 1], [1, 1], [1, 2], [0, 3]],
+      path: [],
       complete: false,  // true if game is complete, false otherwise
       waiting: false
     };
-    this.handleClick = this.handleClick.bind(this);
+    this.handleClick = this.onPathDone.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
     this.pengine = new PengineClient(this.handlePengineCreate);
   }
@@ -51,7 +32,7 @@ class Game extends React.Component {
     });
   }
 
-  handleClick(color) {
+  onPathDone() {
     // No action on click if game is complete or we are waiting.
     if (this.state.complete || this.state.waiting) {
       return;
@@ -73,7 +54,8 @@ class Game extends React.Component {
     //        [r,b,b,v,p,y,p,r,b,g,p,y,b,r],
     //        [v,g,p,b,v,v,g,g,g,b,v,g,g,g]],r, Grid)
     const gridS = JSON.stringify(this.state.grid).replaceAll('"', "");
-    const queryS = "flick(" + gridS + "," + color + ", Grid)";
+    const pathS = JSON.stringify(this.state.path).replaceAll('"', "");
+    const queryS = "join(" + gridS + "," + pathS + ", Grid)";
     this.setState({
       waiting: true
     });
@@ -81,7 +63,8 @@ class Game extends React.Component {
       if (success) {
         this.setState({
           grid: response['Grid'],
-          turns: this.state.turns + 1,
+          score: this.state.score + 1,
+          path: [],
           waiting: false
         });
       } else {
@@ -99,22 +82,16 @@ class Game extends React.Component {
     }
     return (
       <div className="game">
-        <div className="leftPanel">
-          <div className="buttonsPanel">
-            {colors.map(color =>
-              <button
-                className="colorBtn"
-                style={{ backgroundColor: colorToCss(color) }}
-                onClick={() => this.handleClick(color)}
-                key={color}
-              />)}
-          </div>
-          <div className="turnsPanel">
-            <div className="turnsLab">Turns</div>
-            <div className="turnsNum">{this.state.turns}</div>
-          </div>
+        <div className="header">
+          <div className="score">{this.state.score}</div>
         </div>
-        <Board grid={this.state.grid} />
+        {/* Can separate Board an PathBoard ;) */}
+        <Board
+          grid={this.state.grid}
+          path={this.state.path}
+          onPathChange={path => { this.setState({ path }); console.log(JSON.stringify(path)); }}
+          onDone={() => { this.onPathDone() }}
+        />
       </div>
     );
   }
