@@ -1,6 +1,3 @@
-export const numOfRows = 8;
-export const numOfColumns = 5;
-
 export function numberToColor(num) {
     switch (num) {
         case 2: return "#249cd1";
@@ -15,7 +12,7 @@ export function numberToColor(num) {
 
 export const equalPos = (posA, posB) => posA.toString() === posB.toString();
 
-export const valueInPos = (pos, grid) => {
+export const valueInPos = (pos, grid, numOfColumns) => {
     return grid[pos[0] * numOfColumns + pos[1]];
 }
 
@@ -36,4 +33,4 @@ const smallerPow2GreaterOrEqualThan = (num) => {
     return Math.pow(2, log2num) === num ? num : Math.pow(2, log2num + 1);
 }
 
-export const joinResult = (path, grid) => smallerPow2GreaterOrEqualThan(path.reduce((result, pos) => result + valueInPos(pos, grid), 0));
+export const joinResult = (path, grid, numOfColumns) => smallerPow2GreaterOrEqualThan(path.reduce((result, pos) => result + valueInPos(pos, grid, numOfColumns), 0));

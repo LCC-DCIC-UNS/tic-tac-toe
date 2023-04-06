@@ -1,12 +1,12 @@
-:- module(init, [ init/1 ]).
+:- module(init, [ init/2 ]).
 
-% init([
-% 		 [64,64,2,2,16,16,64,32],
-% 		 [4,8,4,4,4,64,2,2],
-% 		 [64,32,64,32,16,2,64,64],
-% 		 [2,2,64,16,16,32,32,32],
-% 		 [16,32,2,4,16,32,64,4]
-% 	]).
+/**
+ * init(-Grid, -NumOfColumns).
+ * 
+ * Predicado especificando la grilla inicial, que será mostrada al comienzo del juego, donde
+ * Grid es una lista con los números que conforman la grilla, y NumOfColumns es la cantidad de columnas, 
+ * determinando las dimensiones de la misma.
+ */
 
 init([
 	64,4,64,32,16,
@@ -17,4 +17,4 @@ init([
 	16,64,2,32,32,
 	64,2,64,32,64,
 	32,2,64,32,4
-]).
+], 5).

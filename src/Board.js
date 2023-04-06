@@ -1,7 +1,7 @@
 import React from 'react';
 import Square from './Square';
 import Connector from './Connector';
-import { valueInPos, numberToColor, connectionInPath, posInPath, isAdyacent, numOfColumns, numOfRows, equalPos } from './util';
+import { valueInPos, numberToColor, connectionInPath, posInPath, isAdyacent, equalPos } from './util';
 class Board extends React.Component {
 
     onSquareClick(pos) {
@@ -18,7 +18,7 @@ class Board extends React.Component {
     }
 
     onSquareHover(pos) {
-        const { path, onPathChange, grid } = this.props;
+        const { path, onPathChange, grid, numOfColumns } = this.props;
         if (path.length === 0) {
             return;
         }
@@ -26,14 +26,15 @@ class Board extends React.Component {
             if (path.length > 1 && equalPos(pos, path[path.length - 2])) {
                 onPathChange(path.slice(0, path.length - 1));
             } else if (!posInPath(pos, path) &&
-                (valueInPos(pos, grid) === valueInPos(path[path.length - 1], grid) || valueInPos(pos, grid) === 2 * valueInPos(path[path.length - 1], grid))) {
+                (valueInPos(pos, grid, numOfColumns) === valueInPos(path[path.length - 1], grid, numOfColumns) || valueInPos(pos, grid, numOfColumns) === 2 * valueInPos(path[path.length - 1], grid, numOfColumns))) {
                 onPathChange(path.concat([pos]));
             }
         }
     }
 
     render() {
-        const { grid, path } = this.props;
+        const { grid, numOfColumns, path } = this.props;
+        const numOfRows = grid.length / numOfColumns;
         return (
             <div className="board">
                 <div className="squares">
@@ -126,19 +127,14 @@ class Board extends React.Component {
         );
     }
 
-    onKeydown(e) {
-        if (e.key === "Escape") {
-            this.props.onPathChange([]);
-        }
-    }
-
     componentDidMount() {
-        window.addEventListener("keydown", this.onKeydown);
+        window.addEventListener("keydown", e => {
+            if (e.key === "Escape") {
+                this.props.onPathChange([]);
+            }
+        });
     }
-
-    componentWillUnmount() {
-        window.removeEventListener("keydown", this.onKeydown);
-    }
+    
 }
 
 export default Board;
