@@ -19,6 +19,9 @@ function Game() {
     PengineClient.init(onServerReady);
   }, []);
 
+  /**
+   * Called when the server was successfully initialized
+   */
   function onServerReady(instance) {
     pengine = instance;
     const queryS = 'init(Grid, NumOfColumns)';
@@ -30,6 +33,9 @@ function Game() {
     });
   }
 
+  /**
+   * Called while the user is drawing a path in the grid, each time the path changes.
+   */
   function onPathChange(newPath) {
     // No effect if waiting.
     if (waiting) {
@@ -39,6 +45,9 @@ function Game() {
     console.log(JSON.stringify(newPath));
   }
 
+  /**
+   * Called when the user finished drawing a path in the grid.
+   */
   function onPathDone() {
     /*
     Build Prolog query, which will be like:
@@ -72,15 +81,20 @@ function Game() {
     });
   }
 
+  /**
+   * Displays each grid of the sequence as the current grid in 1sec intervals.
+   * @param {number[][]} rGrids a sequence of grids.
+   */
   function animateEffect(rGrids) {
-    if (rGrids.length === 0) {
-      setWaiting(false);
-      return;
-    }
     setGrid(rGrids[0]);
-    setTimeout(() => {
-      animateEffect(rGrids.slice(1));
-    }, 1000);
+    const restRGrids = rGrids.slice(1);
+    if (restRGrids.length > 0) {
+      setTimeout(() => {
+        animateEffect(restRGrids);
+      }, 1000);
+    } else {
+      setWaiting(false);
+    }
   }
 
   if (grid === null) {

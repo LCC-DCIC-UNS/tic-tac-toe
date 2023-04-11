@@ -25,15 +25,16 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }) {
             if (path.length > 1 && equalPos(pos, path[path.length - 2])) {
                 onPathChange(path.slice(0, path.length - 1));
             } else if (!posInPath(pos, path) &&
-                (valueInPos(pos, grid, numOfColumns) === valueInPos(path[path.length - 1], grid, numOfColumns) || valueInPos(pos, grid, numOfColumns) === 2 * valueInPos(path[path.length - 1], grid, numOfColumns))) {
+                (valueInPos(pos, grid, numOfColumns) === valueInPos(path[path.length - 1], grid, numOfColumns)
+                    || path.length > 1 && valueInPos(pos, grid, numOfColumns) === 2 * valueInPos(path[path.length - 1], grid, numOfColumns))) {
                 onPathChange(path.concat([pos]));
             }
         }
     }
 
-    useEffect(() => {        
+    useEffect(() => {
         window.addEventListener("keydown", e => {
-            if (e.key === "Escape") {                
+            if (e.key === "Escape") {
                 onPathChange([]);
             }
         });
