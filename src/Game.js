@@ -9,7 +9,7 @@ class Game extends React.Component {
 
   constructor(props) {
     super(props);
-    
+
     this.state = {
       grid: null,
       numOfColumns: null,
@@ -17,17 +17,21 @@ class Game extends React.Component {
       path: [],
       waiting: false
     };
-    
+
     // Make references to 'this' (e.g. this.state) inside methods to refer to the current object. 
     this.onPathChange = this.onPathChange.bind(this);
     this.onPathDone = this.onPathDone.bind(this);
     this.animateEffect = this.animateEffect.bind(this);
-    this.handlePengineCreate = this.handlePengineCreate.bind(this);
+    this.onServerReady = this.onServerReady.bind(this);
 
-    this.pengine = new PengineClient(this.handlePengineCreate);
+    PengineClient.init(this.onServerReady);
   }
 
-  handlePengineCreate() {
+  /**
+   * Called when the server was successfully initialized
+   */
+  onServerReady(instance) {
+    this.pengine = instance;
     const queryS = 'init(Grid, NumOfColumns)';
     this.pengine.query(queryS, (success, response) => {
       if (success) {
@@ -39,15 +43,21 @@ class Game extends React.Component {
     });
   }
 
+  /**
+   * Called while the user is drawing a path in the grid, each time the path changes.
+   */
   onPathChange(path) {
     // No effect if waiting.
     if (this.state.waiting) {
       return;
     }
-    this.setState({ path }); 
+    this.setState({ path });
     console.log(JSON.stringify(path));
   }
 
+  /**
+   * Called when the user finished drawing a path in the grid.
+   */
   onPathDone() {
     /*
     Build Prolog query, which will be like:
@@ -87,19 +97,25 @@ class Game extends React.Component {
     });
   }
 
+  /**
+   * Displays each grid of the sequence as the current grid in 1sec intervals.
+   * @param {number[][]} rGrids a sequence of grids.
+   */
   animateEffect(rGrids) {
-    if (rGrids.length === 0) {
-      this.setState({
-        waiting: false
-      });
-      return;
-    }
     this.setState({
       grid: rGrids[0]
     });
-    setTimeout(() => {
-      this.animateEffect(rGrids.slice(1));
-    }, 1000);
+    const restRGrids = rGrids.slice(1);
+    if (restRGrids.length > 0) {
+      setTimeout(() => {
+        this.animateEffect(restRGrids);
+      }, 1000);
+    } else {
+      this.setState({
+        waiting: false
+      });
+    }
+
   }
 
   render() {
@@ -110,7 +126,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="header">
           <div className="score">{this.state.score}</div>
-        </div>        
+        </div>
         <Board
           grid={this.state.grid}
           numOfColumns={this.state.numOfColumns}
