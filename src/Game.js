@@ -1,54 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 import { joinResult } from './util';
 
-class Game extends React.Component {
+let pengine;
 
-  pengine;
+function Game() {
 
-  constructor(props) {
-    super(props);
-    
-    this.state = {
-      grid: null,
-      numOfColumns: null,
-      score: 0,
-      path: [],
-      waiting: false
-    };
-    
-    // Make references to 'this' (e.g. this.state) inside methods to refer to the current object. 
-    this.onPathChange = this.onPathChange.bind(this);
-    this.onPathDone = this.onPathDone.bind(this);
-    this.animateEffect = this.animateEffect.bind(this);
-    this.handlePengineCreate = this.handlePengineCreate.bind(this);
+  // State
+  const [grid, setGrid] = useState(null);
+  const [numOfColumns, setNumOfColumns] = useState(null);
+  const [score, setScore] = useState(0);
+  const [path, setPath] = useState([]);
+  const [waiting, setWaiting] = useState(false);
 
-    this.pengine = new PengineClient(this.handlePengineCreate);
-  }
+  useEffect(() => {
+    // This is executed just once, after the first render.
+    PengineClient.init(onServerReady);
+  }, []);
 
-  handlePengineCreate() {
+  function onServerReady(instance) {
+    pengine = instance;
     const queryS = 'init(Grid, NumOfColumns)';
-    this.pengine.query(queryS, (success, response) => {
+    pengine.query(queryS, (success, response) => {
       if (success) {
-        this.setState({
-          grid: response['Grid'],
-          numOfColumns: response['NumOfColumns']
-        });
+        setGrid(response['Grid']);
+        setNumOfColumns(response['NumOfColumns']);
       }
     });
   }
 
-  onPathChange(path) {
+  function onPathChange(newPath) {
     // No effect if waiting.
-    if (this.state.waiting) {
+    if (waiting) {
       return;
     }
-    this.setState({ path }); 
-    console.log(JSON.stringify(path));
+    setPath(newPath);
+    console.log(JSON.stringify(newPath));
   }
 
-  onPathDone() {
+  function onPathDone() {
     /*
     Build Prolog query, which will be like:
     join([
@@ -66,61 +57,49 @@ class Game extends React.Component {
           RGrids
         ).
     */
-    const gridS = JSON.stringify(this.state.grid);
-    const pathS = JSON.stringify(this.state.path);
-    const queryS = "join(" + gridS + "," + this.state.numOfColumns + "," + pathS + ", RGrids)";
-    this.setState({
-      waiting: true
-    });
-    this.pengine.query(queryS, (success, response) => {
+    const gridS = JSON.stringify(grid);
+    const pathS = JSON.stringify(path);
+    const queryS = "join(" + gridS + "," + numOfColumns + "," + pathS + ", RGrids)";
+    setWaiting(true);
+    pengine.query(queryS, (success, response) => {
       if (success) {
-        this.setState({
-          score: this.state.score + joinResult(this.state.path, this.state.grid, this.state.numOfColumns),
-          path: []
-        });
-        this.animateEffect(response['RGrids']);
+        setScore(score + joinResult(path, grid, numOfColumns));
+        setPath([]);
+        animateEffect(response['RGrids']);
       } else {
-        this.setState({
-          waiting: false
-        });
+        setWaiting(false);
       }
     });
   }
 
-  animateEffect(rGrids) {
+  function animateEffect(rGrids) {
     if (rGrids.length === 0) {
-      this.setState({
-        waiting: false
-      });
+      setWaiting(false);
       return;
     }
-    this.setState({
-      grid: rGrids[0]
-    });
+    setGrid(rGrids[0]);
     setTimeout(() => {
-      this.animateEffect(rGrids.slice(1));
+      animateEffect(rGrids.slice(1));
     }, 1000);
   }
 
-  render() {
-    if (this.state.grid === null) {
-      return null;
-    }
-    return (
-      <div className="game">
-        <div className="header">
-          <div className="score">{this.state.score}</div>
-        </div>        
-        <Board
-          grid={this.state.grid}
-          numOfColumns={this.state.numOfColumns}
-          path={this.state.path}
-          onPathChange={this.onPathChange}
-          onDone={this.onPathDone}
-        />
-      </div>
-    );
+  if (grid === null) {
+    return null;
   }
+  return (
+    <div className="game">
+      <div className="header">
+        <div className="score">{score}</div>
+      </div>
+      <Board
+        grid={grid}
+        numOfColumns={numOfColumns}
+        path={path}
+        onPathChange={onPathChange}
+        onDone={onPathDone}
+      />
+    </div>
+  );
 }
 
 export default Game;
