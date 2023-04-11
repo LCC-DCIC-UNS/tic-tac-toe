@@ -6,12 +6,12 @@ class Board extends React.Component {
 
     onSquareClick(pos) {
         const { path, onPathChange, onDone } = this.props;
-        if (path.length === 0) {
+        if (path.length === 0) {    // Clicked the first square, so init the path with that square.
             onPathChange([pos]);
-        } else if (equalPos(path[path.length - 1], pos)) {
-            if (path.length === 1) {    // Clicked the first and unique pos in the path, so stop collecting the path.
+        } else if (equalPos(path[path.length - 1], pos)) {  // Clicked the last square in the path
+            if (path.length === 1) {    // If it's the only square in the path, then stop collecting the path (reset to empty).
                 onPathChange([]);
-            } else {
+            } else {                    // Otherwise, trigger the game move.
                 onDone();
             }
         }
@@ -19,16 +19,16 @@ class Board extends React.Component {
 
     onSquareHover(pos) {
         const { path, onPathChange, grid, numOfColumns } = this.props;
-        if (path.length === 0) {
+        if (path.length === 0) {    // Ignore square hover if not collecting a path.
             return;
         }
         if (isAdyacent(pos, path[path.length - 1])) {
-            if (path.length > 1 && equalPos(pos, path[path.length - 2])) {
+            if (path.length > 1 && equalPos(pos, path[path.length - 2])) {  // Remove the last square in the path if returned to the previous one
                 onPathChange(path.slice(0, path.length - 1));
             } else if (!posInPath(pos, path) &&
                 (valueInPos(pos, grid, numOfColumns) === valueInPos(path[path.length - 1], grid, numOfColumns)
-                    || path.length > 1 && valueInPos(pos, grid, numOfColumns) === 2 * valueInPos(path[path.length - 1], grid, numOfColumns))) {
-                onPathChange(path.concat([pos]));
+                    || (path.length > 1 && valueInPos(pos, grid, numOfColumns) === 2 * valueInPos(path[path.length - 1], grid, numOfColumns)))) {
+                onPathChange(path.concat([pos]));   // Add a square to the path if adyacent, not already in the path, and equal or next power than the last in the path
             }
         }
     }
@@ -64,10 +64,7 @@ class Board extends React.Component {
                         } else if (connectionInPath(posB, posA, path)) {
                             from = posB;
                         }
-                        return from ?
-                            <Connector type={"horizontal"} color={numberToColor(grid[from[0] * numOfColumns + from[1]])} key={i} />
-                            :
-                            <div key={i} />;
+                        return <Connector type={"horizontal"} color={from !== undefined ? numberToColor(grid[from[0] * numOfColumns + from[1]]) : undefined} key={i} />;
                     })}
                 </div>
                 <div className="verticalConnectors">
@@ -82,10 +79,7 @@ class Board extends React.Component {
                         } else if (connectionInPath(posB, posA, path)) {
                             from = posB;
                         }
-                        return from ?
-                            <Connector type={"vertical"} color={numberToColor(grid[from[0] * numOfColumns + from[1]])} key={i} />
-                            :
-                            <div key={i} />;
+                        return <Connector type={"vertical"} color={from !== undefined ? numberToColor(grid[from[0] * numOfColumns + from[1]]) : undefined} key={i} />;
                     })}
                 </div>
                 <div className="slashConnectors">
@@ -100,10 +94,7 @@ class Board extends React.Component {
                         } else if (connectionInPath(posB, posA, path)) {
                             from = posB;
                         }
-                        return from ?
-                            <Connector type={"slash"} color={numberToColor(grid[from[0] * numOfColumns + from[1]])} key={i} />
-                            :
-                            <div key={i} />;
+                        return <Connector type={"slash"} color={from !== undefined ? numberToColor(grid[from[0] * numOfColumns + from[1]]) : undefined} key={i} />;
                     })}
                 </div>
                 <div className="backslashConnectors">
@@ -118,10 +109,7 @@ class Board extends React.Component {
                         } else if (connectionInPath(posB, posA, path)) {
                             from = posB;
                         }
-                        return from ?
-                            <Connector type={"backslash"} color={numberToColor(grid[from[0] * numOfColumns + from[1]])} key={i} />
-                            :
-                            <div key={i} />;
+                        return <Connector type={"backslash"} color={from !== undefined ? numberToColor(grid[from[0] * numOfColumns + from[1]]) : undefined} key={i} />;
                     })}
                 </div>
             </div>
