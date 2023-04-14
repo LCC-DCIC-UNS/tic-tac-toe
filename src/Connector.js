@@ -5,7 +5,7 @@ class Connector extends React.Component {
         const { type, color } = this.props;
         return (
             <div className="connector">
-                <div className={"connectorLine" + " " + type} style={{ background: color }} />
+                <div className={"connectorLine " + type} style={{ background: color }} />
             </div>
         );
     }
