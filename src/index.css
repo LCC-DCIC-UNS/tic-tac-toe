@@ -30,9 +30,7 @@ body {
 .squares {
   position: relative;
   z-index: 100;
-  display: grid;
-  grid-template-columns: repeat(5, 80px);
-  grid-template-rows: repeat(8, 80px);
+  display: grid;  
 }
 
 .square {
@@ -59,27 +57,21 @@ body {
   position: absolute;
   top: 0;
   margin: 0 40px;
-  display: grid;
-  grid-template-columns: repeat(4, 80px);
-  grid-template-rows: repeat(8, 80px);
+  display: grid;  
 }
 
 .verticalConnectors {
   position: absolute;
   top: 0;
   margin: 40px 0;
-  display: grid;
-  grid-template-columns: repeat(5, 80px);
-  grid-template-rows: repeat(7, 80px);
+  display: grid;  
 }
 
 .slashConnectors, .backslashConnectors {
   position: absolute;
   top: 0;
   margin: 40px 40px;
-  display: grid;
-  grid-template-columns: repeat(4, 80px);
-  grid-template-rows: repeat(7, 80px);
+  display: grid;  
 }
 
 .connector {
