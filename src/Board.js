@@ -44,7 +44,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }) {
     const numOfRows = grid.length / numOfColumns;
     return (
         <div className="board">
-            <div className="squares">
+            <div className="squares" style={{ gridTemplateColumns: `repeat(${numOfColumns}, 80px)`, gridTemplateRows: `repeat(${numOfRows}, 80px)` }}>
                 {grid.map((num, i) => {
                     const pos = [Math.floor(i / numOfColumns), i % numOfColumns];
                     return (
@@ -58,7 +58,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }) {
                     );
                 })}
             </div>
-            <div className="horizontalConnectors">
+            <div className="horizontalConnectors" style={{ gridTemplateColumns: `repeat(${numOfColumns - 1}, 80px)`, gridTemplateRows: `repeat(${numOfRows}, 80px)` }}>
                 {Array.from({ length: numOfRows * (numOfColumns - 1) }, (_, i) => {
                     const row = Math.floor(i / (numOfColumns - 1));
                     const column = i % (numOfColumns - 1);
@@ -73,7 +73,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }) {
                     return <Connector type={"horizontal"} color={from !== undefined ? numberToColor(grid[from[0] * numOfColumns + from[1]]) : undefined} key={i} />;
                 })}
             </div>
-            <div className="verticalConnectors">
+            <div className="verticalConnectors" style={{ gridTemplateColumns: `repeat(${numOfColumns}, 80px)`, gridTemplateRows: `repeat(${numOfRows - 1}, 80px)` }}>
                 {Array.from({ length: (numOfRows - 1) * numOfColumns }, (_, i) => {
                     const row = Math.floor(i / numOfColumns);
                     const column = i % numOfColumns;
@@ -88,7 +88,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }) {
                     return <Connector type={"vertical"} color={from !== undefined ? numberToColor(grid[from[0] * numOfColumns + from[1]]) : undefined} key={i} />;
                 })}
             </div>
-            <div className="slashConnectors">
+            <div className="slashConnectors" style={{ gridTemplateColumns: `repeat(${numOfColumns - 1}, 80px)`, gridTemplateRows: `repeat(${numOfRows - 1}, 80px)` }}>
                 {Array.from({ length: (numOfRows - 1) * (numOfColumns - 1) }, (_, i) => {
                     const row = Math.floor(i / (numOfColumns - 1));
                     const column = i % (numOfColumns - 1);
@@ -103,7 +103,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }) {
                     return <Connector type={"slash"} color={from !== undefined ? numberToColor(grid[from[0] * numOfColumns + from[1]]) : undefined} key={i} />;
                 })}
             </div>
-            <div className="backslashConnectors">
+            <div className="backslashConnectors" style={{ gridTemplateColumns: `repeat(${numOfColumns - 1}, 80px)`, gridTemplateRows: `repeat(${numOfRows - 1}, 80px)` }}>
                 {Array.from({ length: (numOfRows - 1) * (numOfColumns - 1) }, (_, i) => {
                     const row = Math.floor(i / (numOfColumns - 1));
                     const column = i % (numOfColumns - 1);
