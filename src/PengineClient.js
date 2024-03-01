@@ -6,7 +6,7 @@ class PengineClient {
     static instance;
     static handleCreate;
     static createdPromise = new Promise(resolve => {
-        this.handleCreate = resolve;        
+        this.handleCreate = resolve;
     });
     static init(callback) {
         if (!this.instance) {
