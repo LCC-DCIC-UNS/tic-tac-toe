@@ -1,20 +1,20 @@
-:- module(init, [ init/2 ]).
+:- module(init, [ init/3 ]).
 
 /**
- * init(-Grid, -NumOfColumns).
- * 
- * Predicado especificando la grilla inicial, que será mostrada al comienzo del juego, donde
- * Grid es una lista con los números que conforman la grilla, y NumOfColumns es la cantidad de columnas, 
- * determinando las dimensiones de la misma.
+ * init(-RowsClues, -ColsClues, Grid).
+ * Predicate specifying the initial grid, which will be shown at the beginning of the game,
+ * including the rows and columns clues.
  */
 
-init([
-	64,4,64,32,16,
-	64,8,16,2,32,
-	2,4,64,64,2,
-	2,4,32,16,4,
-	16,4,16,16,16,
-	16,64,2,32,32,
-	64,2,64,32,64,
-	32,2,64,32,4
-], 5).
+init(
+[[3], [1,2], [4], [5], [5]],	% RowsClues
+
+[[2], [5], [1,3], [5], [4]], 	% ColsClues
+
+[["X", _ , _ , _ , _ ], 		
+ ["X", _ ,"X", _ , _ ],
+ ["X", _ , _ , _ , _ ],		% Grid
+ ["#","#","#", _ , _ ],
+ [ _ , _ ,"#","#","#"]
+]
+).

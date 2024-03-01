@@ -7,48 +7,61 @@ let pengine;
 function Game() {
 
   // State
-  const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState(Array(9).fill('-'));
-  const [status, setStatus] = useState('?');
+  const [grid, setGrid] = useState(null);
+  const [rowsClues, setRowsClues] = useState(null);
+  const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
     // This is executed just once, after the first render.    
     // The callback will run when the server is ready, and it stores the pengine instance in the pengine variable. 
-    PengineClient.init(instance => pengine = instance);
+    PengineClient.init(handleServerReady);
   }, []);
 
-  function handleSquareClick(i) {
-    if (status !== '?' || waiting) {
+  function handleServerReady(instance) {
+    pengine = instance;
+    const queryS = 'init(RowClues, ColumClues, Grid)';
+    pengine.query(queryS, (success, response) => {
+      if (success) {
+        setGrid(response['Grid']);
+        setRowsClues(response['RowClues']);
+        setColsClues(response['ColumClues']);
+      }
+    });
+  }
+
+  function handleClick(i, j) {
+    // No action on click if we are waiting.
+    if (waiting) {
       return;
     }
-    // Build Prolog query to make a move and get the updated game status.    
-    const squaresS = JSON.stringify(squares);  // squaresS = '["-", "-", "-", "-", "-", "-", "-", "-", "-"]'
-    const player = xIsNext ? 'X' : 'O';   // playerS = 'X' or 'O'
-    const queryS = `put("${player}", ${i}, ${squaresS}, BoardRes), gameStatus(BoardRes, Status)`;  // queryS = 'put("X", 0, ["-", "-", "-", "-", "-", "-", "-", "-", "-"], BoardRes), gameStatus(BoardRes, Status)'        
+    // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
+    const squaresS = JSON.stringify(grid).replaceAll('"_"', "_"); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
+    const content = '#'; // Content to put in the clicked square.
+    const queryS = `put(${content}, [${i},${j}], [], [],${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
-      if (success) {  // Prolog query will fail when the user clicked on a non empty cell.
-        setSquares(response['BoardRes']);
-        setXIsNext(!xIsNext);
-        setStatus(response['Status']);
+      if (success) {
+        setGrid(response['ResGrid']);
       }
       setWaiting(false);
     });
   }
 
-  let statusText;
-  if (status === '?') {
-    statusText = 'Next player: ' + (xIsNext ? 'X' : 'O');
-  } else if (status === 'T') {
-    statusText = 'Tie!'
-  } else {
-    statusText = 'Winner: ' + status;
+  if (!grid) {
+    return null;
   }
+
+  const statusText = 'Keep playing!';
   return (
     <div className="game">
-      <Board squares={squares} onSquareClick={i => handleSquareClick(i)} />
+      <Board
+        grid={grid}
+        rowsClues={rowsClues}
+        colsClues={colsClues}
+        onClick={(i, j) => handleClick(i, j)}
+      />
       <div className="game-info">
         {statusText}
       </div>

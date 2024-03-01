@@ -1,7 +1,6 @@
 :- module(proylcc,
 	[  
-		put/4,
-		gameStatus/2
+		put/8
 	]).
 
 :-use_module(library(lists)).
@@ -10,6 +9,7 @@
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
 %
+% XsY is the result of replacing the occurrence of X in position XIndex of Xs by Y.
 
 replace(X, 0, Y, [X|Xs], [Y|Xs]).
 
@@ -20,38 +20,18 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% put(+Player, +Position, +Board, -ResBoard)
+% put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
 
-put(Player, Pos, Board, ResBoard):-
-	replace("-", Pos, Player, Board, ResBoard).
+put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
+	% NewGrid is the result of replacing the row Row in position RowN of Grid by a new row NewRow (not yet instantiated).
+	replace(Row, RowN, NewRow, Grid, NewGrid),
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% gameStatus(+Board, +Status)
-%
-
-gameStatus(Board, Winner):-
-	Lines = [
-    	[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-		[0, 3, 6],
-		[1, 4, 7],
-		[2, 5, 8],
-		[0, 4, 8],
-		[2, 4, 6]
-  	],
-  	member([C1, C2, C3], Lines),
-	nth0(C1, Board, Winner),
-	Winner \= "-",
-	nth0(C2, Board, Winner),
-	nth0(C3, Board, Winner),
-	!.  
-
-gameStatus(Board, "?"):-
-	member("-", Board),
-	!.
-
-gameStatus(_Board, "T").
+	% NewRow is the result of replacing the cell Cell in position ColN of Row by _,
+	% if Cell matches Content (Cell is instantiated in the call to replace/5).	
+	% Otherwise (;)
+	% NewRow is the result of replacing the cell in position ColN of Row by Content (no matter its content: _Cell).			
+	(replace(Cell, ColN, _, Row, NewRow),
+	Cell == Content
+		;
+	replace(_Cell, ColN, Content, Row, NewRow)).
