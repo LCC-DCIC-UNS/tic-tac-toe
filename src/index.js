@@ -1,9 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import './index.css';
 import Game from './Game';
 
-ReactDOM.render(
-  <Game />,
-  document.getElementById('root')
-);
+ReactDOMClient.createRoot(document.getElementById('root'))
+  .render(<Game />);

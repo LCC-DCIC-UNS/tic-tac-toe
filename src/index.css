@@ -1,6 +1,11 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font-family: sans-serif;
   margin: 20px;
+  padding: 0;
 }
 
 .square {
@@ -12,10 +17,7 @@ body {
   margin-top: -1px;
   padding: 0;
   text-align: center;
-}
-
-.square:focus {
-  outline: none;
+  cursor: pointer;
 }
 
 .board {
@@ -29,6 +31,6 @@ body {
   flex-direction: row;
 }
 
-.gameInfo {
+.game-info {
   margin-left: 20px;
 }

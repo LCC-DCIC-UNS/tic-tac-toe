@@ -3,16 +3,28 @@ class PengineClient {
     queryId = -1;
     queryCallbacks = {};
 
+    static instance;
+    static handleCreate;
+    static createdPromise = new Promise(resolve => {
+        this.handleCreate = resolve;
+    });
+    static init(callback) {
+        if (!this.instance) {
+            this.instance = new PengineClient();
+        }
+        this.createdPromise.then(() => callback(this.instance));
+    }
+
     /**
     * handleCreate is the callback for Pengine server creation
     */
-    constructor(handleCreate) {
+    constructor() {
         this.query = this.query.bind(this);
         this.handleSuccess = this.handleSuccess.bind(this);
         this.pengine = new window.Pengine({
             server: "http://localhost:3030/pengine",
             application: "proylcc",
-            oncreate: handleCreate,
+            oncreate: PengineClient.handleCreate,
             onsuccess: this.handleSuccess,
             onfailure: this.handleFailure,
             onerror: this.handleError,
