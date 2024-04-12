@@ -29,8 +29,9 @@ put(Player, Pos, Board, ResBoard):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% gameStatus(+Board, +Status)
-%
+% gameStatus(+Board, -Status)
+% Board represents the current game configuration as a list of 9 values: 'X', 'O', '-'.
+% Status represents the current game status for Board, and takes 4 possible values: '?' (in progress), 'T' (tie), 'X' (X won), 'O' (O won).
 
 gameStatus(Board, Winner):-
 	Lines = [

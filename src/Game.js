@@ -7,10 +7,10 @@ let pengine;
 function Game() {
 
   // State
-  const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState(Array(9).fill('-'));
-  const [status, setStatus] = useState('?');
-  const [waiting, setWaiting] = useState(false);
+  const [xIsNext, setXIsNext] = useState(true); // records if it's the turn of X.
+  const [squares, setSquares] = useState(Array(9).fill('-')); // the current game configuration as an array of 9 values: 'X', 'O', '-'.
+  const [status, setStatus] = useState('?');  // the current game status, and takes 4 possible values: '?' (in progress), 'T' (tie), 'X' (X won), 'O' (O won).
+  const [waiting, setWaiting] = useState(false);  // records if we (did a request and) are waiting for a server response.
 
   useEffect(() => {
     // Creation of the pengine server instance.    
