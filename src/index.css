@@ -42,11 +42,12 @@ body {
 
 .clue {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   background: #b9d6e0;
   border-radius: 8px;
   margin: 5px;
+  padding: 3px;
 }
 
 .clue div {
