@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
-import { joinResult } from './util';
+import Block from './Block';
 
 let pengine;
 
@@ -11,7 +11,7 @@ function Game() {
   const [grid, setGrid] = useState(null);
   const [numOfColumns, setNumOfColumns] = useState(null);
   const [score, setScore] = useState(0);
-  const [path, setPath] = useState([]);
+  const [shootBlock, setShootBlock] = useState(null);
   const [waiting, setWaiting] = useState(false);
 
   useEffect(() => {
@@ -24,31 +24,24 @@ function Game() {
    */
   function onServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(Grid, NumOfColumns)';
+    const queryS = 'init(Grid, NumOfColumns), randomBlock(Grid, Block)';
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
+        setShootBlock(response['Block']);
         setNumOfColumns(response['NumOfColumns']);
       }
     });
   }
 
   /**
-   * Called while the user is drawing a path in the grid, each time the path changes.
+   * Called when the player clicks on a lane.
    */
-  function onPathChange(newPath) {
+  function handleLaneClick(lane) {
     // No effect if waiting.
     if (waiting) {
       return;
     }
-    setPath(newPath);
-    console.log(JSON.stringify(newPath));
-  }
-
-  /**
-   * Called when the user finished drawing a path in the grid.
-   */
-  function onPathDone() {
     /*
     Build Prolog query, which will be like:
     join([
@@ -66,15 +59,15 @@ function Game() {
           RGrids
         ).
     */
-    const gridS = JSON.stringify(grid);
-    const pathS = JSON.stringify(path);
-    const queryS = "join(" + gridS + "," + numOfColumns + "," + pathS + ", RGrids)";
+    const gridS = JSON.stringify(grid).replace(/"/g, '');
+    // TODO: actually need to calculate random block from the result grid, in case the range changes.
+    const queryS = `shoot(${shootBlock}, ${lane}, ${gridS}, ${numOfColumns}, Effects), randomBlock(${gridS}, Block)`;
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
-        setScore(score + joinResult(path, grid, numOfColumns));
-        setPath([]);
-        animateEffect(response['RGrids']);
+        // setScore(score + joinResult(path, grid, numOfColumns));        
+        animateEffect(response['Effects']);
+        setShootBlock(response['Block']);
       } else {
         setWaiting(false);
       }
@@ -83,11 +76,14 @@ function Game() {
 
   /**
    * Displays each grid of the sequence as the current grid in 1sec intervals.
-   * @param {number[][]} rGrids a sequence of grids.
+   * @param {number[][]} effects a sequence of grids.
    */
-  function animateEffect(rGrids) {
-    setGrid(rGrids[0]);
-    const restRGrids = rGrids.slice(1);
+  function animateEffect(effects) {
+    const effect = effects[0];
+    const { functor, args } = effect;
+    const [effectGrid, otherEffects] = args;
+    setGrid(effectGrid);
+    const restRGrids = effects.slice(1);
     if (restRGrids.length > 0) {
       setTimeout(() => {
         animateEffect(restRGrids);
@@ -108,10 +104,13 @@ function Game() {
       <Board
         grid={grid}
         numOfColumns={numOfColumns}
-        path={path}
-        onPathChange={onPathChange}
-        onDone={onPathDone}
+        onLaneClick={handleLaneClick}
       />
+      <div className='footer'>
+        <div className='blockShoot'>
+          <Block value={shootBlock} position={[0, 0]} />
+        </div>
+      </div>
     </div>
   );
 }
