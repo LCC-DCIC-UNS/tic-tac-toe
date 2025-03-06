@@ -35,3 +35,7 @@ const smallerPow2GreaterOrEqualThan = (num) => {
 }
 
 export const joinResult = (path, grid, numOfColumns) => smallerPow2GreaterOrEqualThan(path.reduce((result, pos) => result + valueInPos(pos, grid, numOfColumns), 0));
+
+export function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}

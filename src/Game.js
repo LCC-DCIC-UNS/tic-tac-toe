@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 import Block from './Block';
-
-let pengine;
+import { delay } from './util';
 
 function Game() {
 
   // State
+  const [pengine, setPengine] = useState(null);
   const [grid, setGrid] = useState(null);
   const [numOfColumns, setNumOfColumns] = useState(null);
   const [score, setScore] = useState(0);
@@ -16,28 +16,32 @@ function Game() {
 
   useEffect(() => {
     // This is executed just once, after the first render.
-    PengineClient.init(onServerReady);
+    connectToPenginesServer();
   }, []);
 
-  /**
-   * Called when the server was successfully initialized
-   */
-  function onServerReady(instance) {
-    pengine = instance;
+  useEffect(() => {
+    if (pengine) {
+      // This is executed after pengine was set.
+      initGame();
+    }
+  }, [pengine]);
+
+  async function connectToPenginesServer() {
+    setPengine(await PengineClient.create()); // Await until the server is initialized
+  }
+
+  async function initGame() {
     const queryS = 'init(Grid, NumOfColumns), randomBlock(Grid, Block)';
-    pengine.query(queryS, (success, response) => {
-      if (success) {
-        setGrid(response['Grid']);
-        setShootBlock(response['Block']);
-        setNumOfColumns(response['NumOfColumns']);
-      }
-    });
+    const response = await pengine.query(queryS);
+    setGrid(response['Grid']);
+    setShootBlock(response['Block']);
+    setNumOfColumns(response['NumOfColumns']);
   }
 
   /**
    * Called when the player clicks on a lane.
    */
-  function handleLaneClick(lane) {
+  async function handleLaneClick(lane) {
     // No effect if waiting.
     if (waiting) {
       return;
@@ -60,25 +64,22 @@ function Game() {
         ).
     */
     const gridS = JSON.stringify(grid).replace(/"/g, '');
-    // TODO: actually need to calculate random block from the result grid, in case the range changes.
-    const queryS = `shoot(${shootBlock}, ${lane}, ${gridS}, ${numOfColumns}, Effects), randomBlock(${gridS}, Block)`;
+    const queryS = `shoot(${shootBlock}, ${lane}, ${gridS}, ${numOfColumns}, Effects), last(Effects, effect(RGrid,_)), randomBlock(RGrid, Block)`;
     setWaiting(true);
-    pengine.query(queryS, (success, response) => {
-      if (success) {
-        // setScore(score + joinResult(path, grid, numOfColumns));        
-        animateEffect(response['Effects']);
-        setShootBlock(response['Block']);
-      } else {
-        setWaiting(false);
-      }
-    });
+    try {
+      const response = await pengine.query(queryS);
+      animateEffect(response['Effects']);
+      setShootBlock(response['Block']);
+    } catch (error) {
+      setWaiting(false);
+    }
   }
 
   /**
    * Displays each grid of the sequence as the current grid in 1sec intervals.
    * @param {number[][]} effects a sequence of grids.
    */
-  function animateEffect(effects) {
+  async function animateEffect(effects) {
     const effect = effects[0];
     const { functor, args } = effect;
     const [effectGrid, otherEffects] = args;
@@ -94,13 +95,12 @@ function Game() {
       }
     });
     const restRGrids = effects.slice(1);
-    if (restRGrids.length > 0) {
-      setTimeout(() => {
-        animateEffect(restRGrids);
-      }, 1000);
-    } else {
+    if (restRGrids.length === 0) {
       setWaiting(false);
+      return;
     }
+    await delay(1000);
+    animateEffect(restRGrids);
   }
 
   if (grid === null) {

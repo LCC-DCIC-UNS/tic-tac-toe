@@ -4,27 +4,29 @@ class PengineClient {
     queryCallbacks = {};
 
     static instance;
-    static handleCreate;
-    static createdPromise = new Promise(resolve => {
-        this.handleCreate = resolve;        
-    });
-    static init(callback) {
-        if (!this.instance) {
-            this.instance = new PengineClient();
+    static instancePromise;
+
+    static create() {
+        if (!this.instancePromise) {
+            this.instancePromise = new Promise(resolve => {
+                this.instance = new PengineClient(() => {
+                    resolve(this.instance);
+                });
+            });
         }
-        this.createdPromise.then(() => callback(this.instance));
+        return this.instancePromise;
     }
 
     /**
-    * handleCreate is the callback for Pengine server creation
+    * oncreate is the callback for Pengine server creation
     */
-    constructor() {
+    constructor(oncreate) {
         this.query = this.query.bind(this);
         this.handleSuccess = this.handleSuccess.bind(this);
         this.pengine = new window.Pengine({
             server: "http://localhost:3030/pengine",
             application: "proylcc",
-            oncreate: PengineClient.handleCreate,
+            oncreate,
             onsuccess: this.handleSuccess,
             onfailure: this.handleFailure,
             onerror: this.handleError,
@@ -68,15 +70,39 @@ class PengineClient {
      * @param {*} callback 
      */
 
-    query(query, callback) {
+    queryCallback(query, callback) {
         this.queryId++;
         this.queryCallbacks[this.queryId] = callback;
         this.pengine.ask("QueryId=" + this.queryId + ",((" + query + ", Success = 1) ; Success = 0)");
     }
 
-    next(callback) {
+    query(query) {
+        return new Promise((resolve, reject) => {
+            this.queryCallback(query, (success, response) => {
+                if (success) {
+                    resolve(response);
+                } else {
+                    reject(response);
+                }
+            });
+        });
+    }
+
+    nextCallback(callback) {
         this.pengine.next();
         this.queryCallbacks[this.queryId] = callback;
+    }
+
+    next() {
+        return new Promise((resolve, reject) => {
+            this.nextCallback((success, response) => {
+                if (success) {
+                    resolve(response);
+                } else {
+                    reject(response);
+                }
+            });
+        });
     }
 
     static stringify(obj) {
