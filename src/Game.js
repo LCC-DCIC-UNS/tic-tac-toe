@@ -83,6 +83,16 @@ function Game() {
     const { functor, args } = effect;
     const [effectGrid, otherEffects] = args;
     setGrid(effectGrid);
+    otherEffects.forEach((oEffect) => {
+      const { functor, args } = oEffect;
+      switch (functor) {
+        case 'score':
+          setScore(score => score + args[0]);
+          break;
+        default:
+          break;
+      }
+    });
     const restRGrids = effects.slice(1);
     if (restRGrids.length > 0) {
       setTimeout(() => {
