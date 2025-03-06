@@ -39,12 +39,18 @@ class PengineClient {
     */
 
     handleSuccess(response) {
-        // console.log(response);
-        const queryId = response.data[0]["QueryId"];
-        const success = response.data[0]["Success"] === 1;
-        if (this.queryCallbacks[queryId]) {
-            this.queryCallbacks[queryId](success, response.data[0], response.more);
-            delete this.queryCallbacks[queryId];
+        const { QueryId, Success, Error, ...queryAnswerData } = response.data[0];
+        const success = Success === 1;        
+        if (this.queryCallbacks[QueryId]) {
+            const { resolve, reject } = this.queryCallbacks[QueryId];
+            if (Error !== "_") {
+                reject(Error);
+            } else if (success) {
+                resolve({ ...queryAnswerData, more: response.more });
+            } else {
+                resolve(false);
+            }
+            delete this.queryCallbacks[QueryId];
         }
     }
 
@@ -56,8 +62,8 @@ class PengineClient {
         console.log("Failure");
     }
 
-    handleError(response) {
-        throw response.data;
+    handleError(error) {
+        throw error;
     }
 
     /**
@@ -66,42 +72,21 @@ class PengineClient {
      *    call the corresponding callback, recorded in queryCallbacks under the id.
      *  - always succeeds so we ensure QueryId is bound, but the success state of the original query is determined 
      *    by the value bound to Success variable.
-     * @param {*} query 
-     * @param {*} callback 
+     *  - catches any prolog error and rejects the promise with it. 
+     * @param {*} query      
      */
-
-    queryCallback(query, callback) {
-        this.queryId++;
-        this.queryCallbacks[this.queryId] = callback;
-        this.pengine.ask("QueryId=" + this.queryId + ",((" + query + ", Success = 1) ; Success = 0)");
-    }
-
     query(query) {
         return new Promise((resolve, reject) => {
-            this.queryCallback(query, (success, response) => {
-                if (success) {
-                    resolve(response);
-                } else {
-                    reject(response);
-                }
-            });
+            this.queryId++;
+            this.queryCallbacks[this.queryId] = { resolve, reject };
+            this.pengine.ask(`catch((QueryId=${this.queryId},((${query}, Success = 1) ; Success = 0)), error(Error, _), (QueryId=${this.queryId}, Success = 0))`);            
         });
-    }
-
-    nextCallback(callback) {
-        this.pengine.next();
-        this.queryCallbacks[this.queryId] = callback;
     }
 
     next() {
         return new Promise((resolve, reject) => {
-            this.nextCallback((success, response) => {
-                if (success) {
-                    resolve(response);
-                } else {
-                    reject(response);
-                }
-            });
+            this.queryCallbacks[this.queryId] = { resolve, reject };
+            this.pengine.next();
         });
     }
 

@@ -66,11 +66,11 @@ function Game() {
     const gridS = JSON.stringify(grid).replace(/"/g, '');
     const queryS = `shoot(${shootBlock}, ${lane}, ${gridS}, ${numOfColumns}, Effects), last(Effects, effect(RGrid,_)), randomBlock(RGrid, Block)`;
     setWaiting(true);
-    try {
-      const response = await pengine.query(queryS);
+    const response = await pengine.query(queryS);
+    if (response) {      
       animateEffect(response['Effects']);
       setShootBlock(response['Block']);
-    } catch (error) {
+    } else {
       setWaiting(false);
     }
   }
@@ -80,9 +80,8 @@ function Game() {
    * @param {number[][]} effects a sequence of grids.
    */
   async function animateEffect(effects) {
-    const effect = effects[0];
-    const { functor, args } = effect;
-    const [effectGrid, otherEffects] = args;
+    const effect = effects[0];    
+    const [effectGrid, otherEffects] = effect.args;
     setGrid(effectGrid);
     otherEffects.forEach((oEffect) => {
       const { functor, args } = oEffect;
