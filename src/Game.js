@@ -86,7 +86,7 @@ function Game() {
     otherEffects.forEach((oEffect) => {
       const { functor, args } = oEffect;
       switch (functor) {
-        case 'score':
+        case 'newBlock':
           setScore(score => score + args[0]);
           break;
         default:
