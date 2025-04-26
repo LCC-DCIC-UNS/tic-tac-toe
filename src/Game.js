@@ -38,6 +38,11 @@ function Game() {
     setWaiting(false);
   }
 
+  // Don't display anything until the Prolog server is ready (alternatively render a loading UI).
+  if (!pengine) {
+    return null;
+  }
+
   let statusText;
   if (status === '?') {
     statusText = 'Next player: ' + (xIsNext ? 'X' : 'O');
