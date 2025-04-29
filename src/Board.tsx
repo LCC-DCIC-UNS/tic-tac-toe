@@ -1,7 +1,11 @@
-import React from 'react';
 import Square from './Square';
 
-function Board({ squares, onSquareClick }) {
+interface BoardProps {
+    squares: string[];
+    onSquareClick: (i: number) => void;
+}
+
+function Board({ squares, onSquareClick }: BoardProps) {
     return (
         <div className="board">
             {squares.map((square, i) =>
@@ -13,7 +17,6 @@ function Board({ squares, onSquareClick }) {
             )}
         </div>
     );
-
 }
 
 export default Board;
