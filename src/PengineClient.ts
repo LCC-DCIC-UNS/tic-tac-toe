@@ -1,10 +1,10 @@
 class PengineClient {
 
-    queryId = -1;
-    queryCallbacks = {};
+    queryId:any = -1;
+    queryCallbacks: any = {};
 
-    static instance;
-    static instancePromise;
+    static instance: any;
+    static instancePromise: any;
 
     static create() {
         if (!this.instancePromise) {
@@ -22,7 +22,7 @@ class PengineClient {
     /**
     * oncreate is the callback for Pengine server creation
     */
-    constructor(oncreate) {
+    constructor(oncreate: any) {
         this.query = this.query.bind(this);
         this.handleSuccess = this.handleSuccess.bind(this);
         this.pengine = new (window as any).Pengine({
@@ -40,7 +40,7 @@ class PengineClient {
     * Callback for successful response received from Pengines server.
     */
 
-    handleSuccess(response) {
+    handleSuccess(response: any) {
         const { QueryId, Success, Error, ...queryAnswerData } = response.data[0];
         const success = Success === 1;
         if (this.queryCallbacks[QueryId]) {
@@ -64,7 +64,7 @@ class PengineClient {
         console.log("Failure");
     }
 
-    handleError(error) {
+    handleError(error: any) {
         throw error;
     }
 
@@ -77,7 +77,7 @@ class PengineClient {
      *  - catches any prolog error and rejects the promise with it. 
      * @param {*} query      
      */
-    query(query) {
+    query(query: any) {
         return new Promise((resolve, reject) => {
             this.queryId++;
             this.queryCallbacks[this.queryId] = { resolve, reject };
@@ -92,7 +92,7 @@ class PengineClient {
         });
     }
 
-    static stringify(obj) {
+    static stringify(obj: any) {
         return (window as any).Pengine.stringify(obj);
     }
 
