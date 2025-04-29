@@ -1,6 +1,12 @@
 import { numberToColor } from './util';
 
-function Block({ value, position }) {
+export type Position = [number, number];
+interface BlockProps {
+    value: number;
+    position: Position;
+}
+
+function Block({ value, position }: BlockProps) {
     const [row, column] = position;
     return (
         <div

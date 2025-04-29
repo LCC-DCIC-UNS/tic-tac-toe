@@ -42,7 +42,7 @@ class PengineClient {
 
     handleSuccess(response) {
         const { QueryId, Success, Error, ...queryAnswerData } = response.data[0];
-        const success = Success === 1;        
+        const success = Success === 1;
         if (this.queryCallbacks[QueryId]) {
             const { resolve, reject } = this.queryCallbacks[QueryId];
             if (Error !== "_") {
@@ -81,7 +81,7 @@ class PengineClient {
         return new Promise((resolve, reject) => {
             this.queryId++;
             this.queryCallbacks[this.queryId] = { resolve, reject };
-            this.pengine.ask(`catch((QueryId=${this.queryId},((${query}, Success = 1) ; Success = 0)), error(Error, _), (QueryId=${this.queryId}, Success = 0))`);            
+            this.pengine.ask(`catch((QueryId=${this.queryId},((${query}, Success = 1) ; Success = 0)), error(Error, _), (QueryId=${this.queryId}, Success = 0))`);
         });
     }
 
@@ -96,6 +96,11 @@ class PengineClient {
         return (window as any).Pengine.stringify(obj);
     }
 
+}
+
+export interface PrologTerm {
+    functor: string;
+    args: any[];
 }
 
 export default PengineClient;

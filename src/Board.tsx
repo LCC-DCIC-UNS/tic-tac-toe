@@ -1,7 +1,13 @@
-import Block from './Block';
+import Block, { Position } from './Block';
+import { Grid } from './Game';
 
-function Board({ grid, numOfColumns, onLaneClick }) {
+interface BoardProps {
+    grid: Grid;
+    numOfColumns: number;
+    onLaneClick: (lane: number) => void;
+}
 
+function Board({ grid, numOfColumns, onLaneClick }: BoardProps) {
     const numOfRows = grid.length / numOfColumns;
     return (
         <div className="board">
@@ -18,7 +24,7 @@ function Board({ grid, numOfColumns, onLaneClick }) {
                     if (num === "-") {
                         return null;
                     }
-                    const pos = [Math.floor(i / numOfColumns), i % numOfColumns];
+                    const pos: Position = [Math.floor(i / numOfColumns), i % numOfColumns];
                     return (
                         <Block
                             value={num}

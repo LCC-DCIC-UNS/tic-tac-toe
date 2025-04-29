@@ -1,18 +1,30 @@
 import { useEffect, useState } from 'react';
-import PengineClient from './PengineClient';
+import PengineClient, { PrologTerm } from './PengineClient';
 import Board from './Board';
 import Block from './Block';
 import { delay } from './util';
+
+export type Grid = (number | "-")[];
+interface EffectTerm extends PrologTerm {
+  functor: "effect";
+  args: [Grid, EffectInfoTerm[]];
+}
+
+type EffectInfoTerm = NewBlockTerm | PrologTerm;
+interface NewBlockTerm extends PrologTerm {
+  functor: "newBlock";
+  args: [number];
+}
 
 function Game() {
 
   // State
   const [pengine, setPengine] = useState<any>(null);
-  const [grid, setGrid] = useState(null);
-  const [numOfColumns, setNumOfColumns] = useState(null);
-  const [score, setScore] = useState(0);
-  const [shootBlock, setShootBlock] = useState(null);
-  const [waiting, setWaiting] = useState(false);
+  const [grid, setGrid] = useState<Grid | null>(null);
+  const [numOfColumns, setNumOfColumns] = useState<number | null>(null);
+  const [score, setScore] = useState<number>(0);
+  const [shootBlock, setShootBlock] = useState<number | null>(null);
+  const [waiting, setWaiting] = useState<boolean>(false);
 
   useEffect(() => {
     // This is executed just once, after the first render.
@@ -41,32 +53,19 @@ function Game() {
   /**
    * Called when the player clicks on a lane.
    */
-  async function handleLaneClick(lane) {
+  async function handleLaneClick(lane: number) {
     // No effect if waiting.
     if (waiting) {
       return;
     }
     /*
-    Build Prolog query, which will be like:
-    join([
-          64,4,64,32,16,
-          64,8,16,2,32,
-          2,4,64,64,2,
-          2,4,32,16,4,
-          16,4,16,16,16,
-          16,64,2,32,32,
-          64,2,64,32,64,
-          32,2,64,32,4
-          ], 
-          5, 
-          [[2, 0], [3, 0], [4, 1], [3, 1], [2, 1], [1, 1], [1, 2], [0, 3]],
-          RGrids
-        ).
+    Build Prolog query, which will be something like:
+    shoot(2, 2, [4,2,8,64,32,2,-,-,4,16,-,-,-,-,2,-,-,-,-,16,-,-,-,-,2,-,-,-,-,-,-,-,-,-,-], 5, Effects), last(Effects, effect(RGrid,_)), randomBlock(RGrid, Block).
     */
     const gridS = JSON.stringify(grid).replace(/"/g, '');
     const queryS = `shoot(${shootBlock}, ${lane}, ${gridS}, ${numOfColumns}, Effects), last(Effects, effect(RGrid,_)), randomBlock(RGrid, Block)`;
     setWaiting(true);
-    const response = await pengine.query(queryS);
+    const response = await pengine.query(queryS);    
     if (response) {      
       animateEffect(response['Effects']);
       setShootBlock(response['Block']);
@@ -74,17 +73,17 @@ function Game() {
       setWaiting(false);
     }
   }
-
+  
   /**
-   * Displays each grid of the sequence as the current grid in 1sec intervals.
-   * @param {number[][]} effects a sequence of grids.
+   * Displays each grid of the sequence as the current grid in 1sec intervals, and considers the other effect information.
+   * @param effects The list of effects to be animated.
    */
-  async function animateEffect(effects) {
+  async function animateEffect(effects: EffectTerm[]) {
     const effect = effects[0];    
-    const [effectGrid, otherEffects] = effect.args;
+    const [effectGrid, effectInfo] = effect.args;
     setGrid(effectGrid);
-    otherEffects.forEach((oEffect) => {
-      const { functor, args } = oEffect;
+    effectInfo.forEach((effectInfoItem) => {
+      const { functor, args } = effectInfoItem;
       switch (functor) {
         case 'newBlock':
           setScore(score => score + args[0]);
@@ -112,12 +111,12 @@ function Game() {
       </div>
       <Board
         grid={grid}
-        numOfColumns={numOfColumns}
+        numOfColumns={numOfColumns!}
         onLaneClick={handleLaneClick}
       />
       <div className='footer'>
         <div className='blockShoot'>
-          <Block value={shootBlock} position={[0, 0]} />
+          <Block value={shootBlock!} position={[0, 0]} />
         </div>
       </div>
     </div>
