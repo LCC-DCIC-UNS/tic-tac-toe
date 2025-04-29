@@ -17,13 +17,15 @@ class PengineClient {
         return this.instancePromise;
     }
 
+    pengine;
+
     /**
     * oncreate is the callback for Pengine server creation
     */
     constructor(oncreate) {
         this.query = this.query.bind(this);
         this.handleSuccess = this.handleSuccess.bind(this);
-        this.pengine = new window.Pengine({
+        this.pengine = new (window as any).Pengine({
             server: "http://localhost:3030/pengine",
             application: "proylcc",
             oncreate,
@@ -91,7 +93,7 @@ class PengineClient {
     }
 
     static stringify(obj) {
-        return window.Pengine.stringify(obj);
+        return (window as any).Pengine.stringify(obj);
     }
 
 }

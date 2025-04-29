@@ -1,4 +1,3 @@
-import React from 'react';
 import { numberToColor } from './util';
 
 function Block({ value, position }) {

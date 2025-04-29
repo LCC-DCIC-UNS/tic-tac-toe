@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 import Block from './Block';
@@ -7,7 +7,7 @@ import { delay } from './util';
 function Game() {
 
   // State
-  const [pengine, setPengine] = useState(null);
+  const [pengine, setPengine] = useState<any>(null);
   const [grid, setGrid] = useState(null);
   const [numOfColumns, setNumOfColumns] = useState(null);
   const [score, setScore] = useState(0);
@@ -32,7 +32,7 @@ function Game() {
 
   async function initGame() {
     const queryS = 'init(Grid, NumOfColumns), randomBlock(Grid, Block)';
-    const response = await pengine.query(queryS);
+    const response = await pengine!.query(queryS);
     setGrid(response['Grid']);
     setShootBlock(response['Block']);
     setNumOfColumns(response['NumOfColumns']);

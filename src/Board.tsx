@@ -1,6 +1,4 @@
-import React from 'react';
 import Block from './Block';
-import { valueInPos, numberToColor, connectionInPath, posInPath, isAdyacent, equalPos } from './util';
 
 function Board({ grid, numOfColumns, onLaneClick }) {
 
