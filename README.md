@@ -12,7 +12,7 @@ Se debe implementar una aplicación web que permita jugar al *M2 Blocks*, con un
 
 Principales funcionalidades a ser contempladas:
 
-- <span style="color:#fc7f40">**Generación aleatoria del bloque a disparar.**</span> Tener en cuenta que el número a disparar debe ser elegido aleatoriamente dentro de un rango permitido. Este rango permitido va variando a medida que evoluciona el juego y se van consiguiendo bloques más grandes:
+- <span style="color:#fc7f40">📌 **Generación aleatoria del bloque a disparar.**</span> Tener en cuenta que el número a disparar debe ser elegido aleatoriamente dentro de un rango permitido. Este rango permitido va variando a medida que evoluciona el juego y se van consiguiendo bloques más grandes:
 
   | **Máximo de la Grilla** | **Rango**       | **Observación**          |
   |-------------------------|-----------------|--------------------------|
@@ -27,12 +27,12 @@ Principales funcionalidades a ser contempladas:
   | 16k                     | 32 a 1024       | Se retira el 16          |
   | …                       | …               | …                        |
 
-- <span style="color:#fc7f40">**Efecto del disparo de un bloque.**</span> Involucra la ubicación del bloque en la columna del disparo, posiblemente seguido de una serie de efectos en cadena alternando la mezcla de bloques adyacentes iguales, generando nuevos bloques, y “caídas” de bloques (pensándolo como gravedad invertida) para ocupar espacios que se originaron de las mezclas. La interfaz debe mostrar cada uno de estos efectos en cadena progresivamente, uno luego del otro, estilo animación. **Importante**: se debe imitar fielmente el comportamiento de la aplicación. Ante cualquier duda acerca de algún comportamiento específico, consultar con el docente asignado.
-- <span style="color:#fc7f40">**Avisos “*Combo x N*”.**</span> Por ejemplo: “Combo x 3” significa que se produjeron 3 mezclas de bloques como consecuencia del mismo disparo.
-- <span style="color:#fc7f40">**Avisos de nuevo bloque máximo logrado.**</span> Al menos a partir del 512, bloque agregado al rango de disparo (“New block added”) y bloque “retirado” del rango de disparo (“Eliminated Block”).
-- <span style="color:#fc7f40">**Limpieza de bloques retirados.**</span> Esto es, que ya no se generan más. Cuando se logra un nuevo bloque máximo, y si esto implica que deja de generarse un determinado bloque (extremo inferior del rango actual), las apariciones de ese bloque, ahora “retirado”, deben eliminarse. Esta limpieza puede pensarse como un efecto más de la movida que causó el retiro del bloque.
-- <span style="color:#fc7f40">**Booster *Hint jugada*.**</span> Al activarlo muestra, para cada columna, una pista (por ejemplo, flotando sobre la propia columna, semi-transparente) del resultado que se va a conseguir con esa jugada, por ejemplo: *bloque X*, *combo x N*, etc. Puede activarse en cualquier momento, cuantas veces se quiera, y muestra las pistas solo para la jugada actual.
-- <span style="color:#fc7f40">**Booster *Bloque siguiente*.**</span> Al activarlo se muestra el bloque del disparo siguiente, además del actual. Puede activarse en cualquier momento, cuantas veces se quiera, y dura por un tiempo limitado.
+- <span style="color:#fc7f40">📌  **Efecto del disparo de un bloque.**</span> Involucra la ubicación del bloque en la columna del disparo, posiblemente seguido de una serie de efectos en cadena alternando la mezcla de bloques adyacentes iguales, generando nuevos bloques, y “caídas” de bloques (pensándolo como gravedad invertida) para ocupar espacios que se originaron de las mezclas. La interfaz debe mostrar cada uno de estos efectos en cadena progresivamente, uno luego del otro, estilo animación. **Importante**: se debe imitar fielmente el comportamiento de la aplicación. Ante cualquier duda acerca de algún comportamiento específico, consultar con el docente asignado.
+- <span style="color:#fc7f40">📌  **Avisos “*Combo x N*”.**</span> Por ejemplo: “Combo x 3” significa que se produjeron 3 mezclas de bloques como consecuencia del mismo disparo.
+- <span style="color:#fc7f40">📌  **Avisos de nuevo bloque máximo logrado.**</span> Al menos a partir del 512, bloque agregado al rango de disparo (“New block added”) y bloque “retirado” del rango de disparo (“Eliminated Block”).
+- <span style="color:#fc7f40">📌  **Limpieza de bloques retirados.**</span> Esto es, que ya no se generan más. Cuando se logra un nuevo bloque máximo, y si esto implica que deja de generarse un determinado bloque (extremo inferior del rango actual), las apariciones de ese bloque, ahora “retirado”, deben eliminarse. Esta limpieza puede pensarse como un efecto más de la movida que causó el retiro del bloque.
+- <span style="color:#fc7f40">📌  **Booster *Hint jugada*.**</span> Al activarlo muestra, para cada columna, una pista (por ejemplo, flotando sobre la propia columna, semi-transparente) del resultado que se va a conseguir con esa jugada, por ejemplo: *bloque X*, *combo x N*, etc. Puede activarse en cualquier momento, cuantas veces se quiera, y muestra las pistas solo para la jugada actual.
+- <span style="color:#fc7f40">📌  **Booster *Bloque siguiente*.**</span> Al activarlo se muestra el bloque del disparo siguiente, además del actual. Puede activarse en cualquier momento, cuantas veces se quiera, y dura por un tiempo limitado.
 
 ### Implementación
 Debe extenderse la implementación molde (React + Prolog) en este repositorio para cumplir con los requerimientos de funcionalidad mencionados anteriormente.
@@ -46,9 +46,9 @@ Se deberá realizar un informe que explique claramente la **implementación en P
 Además, deberá incluirse una sección con **casos de test** significativos (capturas de pantalla).	
 
 El informe debe ser:
-- <span style="color:#0083bb">**Claro:**</span> información bien estructurada y presentada
-- <span style="color:#0083bb">**Completo:**</span> explicando cómo resolvieron cada requerimiento funcional (a nivel de estrategia, no a nivel de código), funcionalidades extra implementadas (si es que alguna), aspectos positivos de la resolución, desafíos que encontraron y cómo los enfrentaron, casos de test (capturas de pantalla). 
-- <span style="color:#0083bb">**Sintético y relevante:**</span> no repetir información que está en el enunciado, como reglas del juego, no documentar funcionalidad de muy bajo nivel o auxiliar, que no contribuya al entendimiento de la estrategia principal.
+- <span style="color:#0083bb">✅ **Claro:**</span> información bien estructurada y presentada
+- <span style="color:#0083bb">✅ **Completo:**</span> explicando cómo resolvieron cada requerimiento funcional (a nivel de estrategia, no a nivel de código), funcionalidades extra implementadas (si es que alguna), aspectos positivos de la resolución, desafíos que encontraron y cómo los enfrentaron, casos de test (capturas de pantalla). 
+- <span style="color:#0083bb">✅ **Sintético y relevante:**</span> no repetir información que está en el enunciado, como reglas del juego, no documentar funcionalidad de muy bajo nivel o auxiliar, que no contribuya al entendimiento de la estrategia principal.
 
 **Consejo:** darle algunas pasadas (lectura y modificaciones) hasta conseguir todo esto.
 
