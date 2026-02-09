@@ -6,7 +6,8 @@
 :- use_module(library(pengines)).
 :- use_module(library(http/http_cors)).
 
-:- set_setting(http:cors,[*]).	% mauro: enable cors for all domains.
+% Enable cors for all domains.
+:- set_setting(http:cors,[*]).
 
 :- [load].
 

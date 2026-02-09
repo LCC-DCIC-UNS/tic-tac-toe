@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import PengineClient from './PengineClient';
+import PengineClient from '../services/PengineClient';
 import Board from './Board';
 
 function Game() {

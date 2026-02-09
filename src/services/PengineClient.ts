@@ -1,6 +1,6 @@
 class PengineClient {
 
-    queryId:any = -1;
+    queryId: any = -1;
     queryCallbacks: any = {};
 
     static instance: any;
@@ -32,7 +32,8 @@ class PengineClient {
             onsuccess: this.handleSuccess,
             onfailure: this.handleFailure,
             onerror: this.handleError,
-            destroy: false
+            destroy: false,
+            // destroy: true,
         });
     }
 
@@ -78,6 +79,7 @@ class PengineClient {
      * @param {*} query      
      */
     query(query: any) {
+        console.log("queryId", this.queryId);
         return new Promise((resolve, reject) => {
             this.queryId++;
             this.queryCallbacks[this.queryId] = { resolve, reject };
