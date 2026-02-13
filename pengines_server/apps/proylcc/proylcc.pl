@@ -1,58 +1,68 @@
 :- module(proylcc,
 	[  
-		put/4,
-		gameStatus/2
+		connect/4
 	]).
 
 :-use_module(library(lists)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% replace(?X, +XIndex, +Y, +Xs, -XsY)
+% connect(+Grid, +NumOfColumns, +Path, -Effects)
 %
+% donde Effects es una lista de effect(ResultingGrid, AuxiliaryInfo) 
+% donde AuxiliaryInfo es una lista de información adicional que se quiera devolver 
+% para la UI (por ejemplo, los objetivos restantes, o qué celdas se vieron afectadas, etc).
 
-replace(X, 0, Y, [X|Xs], [Y|Xs]).
-
-replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
-    XIndex > 0,
-    XIndexS is XIndex - 1,
-    replace(X, XIndexS, Y, Xs, XsY).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% put(+Player, +Position, +Board, -ResBoard)
-%
-
-put(Player, Pos, Board, ResBoard):-
-	replace("-", Pos, Player, Board, ResBoard).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% gameStatus(+Board, -Status)
-% Board represents the current game configuration as a list of 9 values: 'X', 'O', '-'.
-% Status represents the current game status for Board, and takes 4 possible values: '?' (in progress), 'T' (tie), 'X' (X won), 'O' (O won).
-
-gameStatus(Board, Winner):-
-	Lines = [
-    	[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-		[0, 3, 6],
-		[1, 4, 7],
-		[2, 5, 8],
-		[0, 4, 8],
-		[2, 4, 6]
-  	],
-  	member([C1, C2, C3], Lines),
-	nth0(C1, Board, Winner),
-	Winner \= "-",
-	nth0(C2, Board, Winner),
-	nth0(C3, Board, Winner),
-	!.  
-
-gameStatus(Board, "?"):-
-	member("-", Board),
-	!.
-
-gameStatus(_Board, "T").
+connect(
+	[
+		[-], [r], [c], [p], [-], [-], [-], [-],	
+		[c], [a], [v], [p], [r], [-], [-], [-],	
+		[r], [r], [v], [a], [r], [v], [-], [-],	
+		[a], [c], [-], [a], [c], [v], [v], [-],	
+		[a, ~], [c, ~], [-], [v], [c, ~], [a, ~], [c, ~], [c],	
+		[c, ~], [c, ~], [-], [v, ~], [c, ~], [a, ~], [c, ~], [-],	
+		[c, ~], [a, ~], [v, ~], [v, ~], [c, ~], [c, ~], [-], [-],	
+		[c, ~], [a, ~], [a, ~], [a, ~], [a, ~], [-], [-], [-],	
+		[-], [a, ~], [a, ~], [a], [-], [-], [-], [-]
+	], 8, [21, 29, 30],
+	[
+		effect([
+			[-], [r], [c], [p], [-], [-], [-], [-],	
+			[c], [a], [v], [p], [r], [-], [-], [-],	
+			[r], [r], [v], [a], [r], [], [-], [-],	
+			[a], [c], [-], [a], [c], [], [], [-],	
+			[a, ~], [c, ~], [-], [v], [c, ~], [a, ~], [c, ~], [c],	
+			[c, ~], [c, ~], [-], [v, ~], [c, ~], [a, ~], [c, ~], [-],	
+			[c, ~], [a, ~], [v, ~], [v, ~], [c, ~], [c, ~], [-], [-],	
+			[c, ~], [a, ~], [a, ~], [a, ~], [a, ~], [-], [-], [-],	
+			[-], [a, ~], [a, ~], [a], [-], [-], [-], [-]
+		], [
+			achieved([[v, 3]])
+		]),
+		effect([
+			[-], [r], [c], [p], [-], [-], [-], [-],	
+			[c], [a], [v], [p], [r], [-], [-], [-],	
+			[r], [r], [v], [a], [r], [~], [-], [-],	
+			[a], [c], [-], [a], [c], [~], [~], [-],	
+			[a, ~], [c, ~], [-], [v], [c, ~], [a, ~], [c, ~], [c],	
+			[c, ~], [c, ~], [-], [v, ~], [c, ~], [a, ~], [c, ~], [-],	
+			[c, ~], [a, ~], [v, ~], [v, ~], [c, ~], [c, ~], [-], [-],	
+			[c, ~], [a, ~], [a, ~], [a, ~], [a, ~], [-], [-], [-],	
+			[-], [a, ~], [a, ~], [a], [-], [-], [-], [-]
+		], [			
+			achieved([[~, 3]])
+			% o dejar libre qué info auxiliar para la UI se devuelve.			
+		]),
+		effect([
+			[-], [r], [c], [p], [-], [-], [-], [-],	
+			[c], [a], [v], [p], [r], [-], [-], [-],	
+			[r], [r], [v], [a], [r], [r, ~], [-], [-],	
+			[a], [c], [-], [a], [c], [c, ~], [r, ~], [-],	
+			[a, ~], [c, ~], [-], [v], [c, ~], [a, ~], [c, ~], [c],	
+			[c, ~], [c, ~], [-], [v, ~], [c, ~], [a, ~], [c, ~], [-],	
+			[c, ~], [a, ~], [v, ~], [v, ~], [c, ~], [c, ~], [-], [-],	
+			[c, ~], [a, ~], [a, ~], [a, ~], [a, ~], [-], [-], [-],	
+			[-], [a, ~], [a, ~], [a], [-], [-], [-], [-]
+		], [gravity])
+	]
+).

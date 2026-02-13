@@ -1,15 +1,38 @@
 import { useEffect, useState } from 'react';
-import PengineClient from '../services/PengineClient';
+import PengineClient, { PrologTerm } from '../services/PengineClient';
 import Board from './Board';
+import { delay } from './util';
+
+export const colors = ["r", "v", "p", "a"];
+
+export type CellContent = (typeof colors[number]) | "-" | "~";
+
+export type Grid = CellContent[][];
+
+type EffectTerm = PrologTerm & {
+  functor: "effect";
+  args: [Grid, EffectInfoTerm[]];
+}
+
+type EffectInfoTerm = NewBlockTerm | PrologTerm;
+
+type NewBlockTerm = PrologTerm & {
+  functor: "achieved";
+  args: [CellContent, number][];
+}
+
+type Objectives = {
+  [key in CellContent]?: number;
+}
 
 function Game() {
-
   // State
   const [pengine, setPengine] = useState<any>(null);
-  const [xIsNext, setXIsNext] = useState<boolean>(true); // records if it's the turn of X.
-  const [squares, setSquares] = useState<string[]>(Array(9).fill('-')); // the current game configuration as an array of 9 values: 'X', 'O', '-'.
-  const [status, setStatus] = useState<'?' | 'T' | 'X' | 'O'>('?');  // the current game status, and takes 4 possible values: '?' (in progress), 'T' (tie), 'X' (X won), 'O' (O won).
-  const [waiting, setWaiting] = useState<boolean>(false);  // records if we (did a request and) are waiting for a server response.
+  const [grid, setGrid] = useState<Grid | null>(null);
+  const [numOfColumns, setNumOfColumns] = useState<number | null>(null);
+  const [objectives, setObjectives] = useState<Objectives>({});
+  const [path, setPath] = useState<number[]>([]);
+  const [waiting, setWaiting] = useState(false);
 
   useEffect(() => {
     // This is executed just once, after the first render.
@@ -20,22 +43,99 @@ function Game() {
     setPengine(await PengineClient.create()); // Await until the server is initialized
   }
 
-  async function handleSquareClick(i: number) {
-    if (status !== '?' || waiting) {
+  useEffect(() => {
+    if (pengine) {
+      // This is executed after pengine was set.
+      initGame();
+    }
+  }, [pengine]);
+
+
+  async function initGame() {
+    const queryS = 'init(Grid, NumOfColumns, Goals)';
+    const response = await pengine!.query(queryS);
+    setGrid(response['Grid']);
+    setNumOfColumns(response['NumOfColumns']);
+    setObjectives(response['Goals']);
+  }
+
+  /**
+   * Called while the user is drawing a path in the grid, each time the path changes.
+   */
+  function onPathChange(newPath: number[]) {
+    // No effect if waiting.
+    if (waiting) {
       return;
     }
-    // Build Prolog query to make a move and get the updated game status.    
-    const squaresS = JSON.stringify(squares);  // squaresS = '["-", "-", "-", "-", "-", "-", "-", "-", "-"]'
-    const player = xIsNext ? 'X' : 'O';   // playerS = 'X' or 'O'
-    const queryS = `put("${player}", ${i}, ${squaresS}, BoardRes), gameStatus(BoardRes, Status)`;  // queryS = 'put("X", 0, ["-", "-", "-", "-", "-", "-", "-", "-", "-"], BoardRes), gameStatus(BoardRes, Status)'        
+    setPath(newPath);
+    console.log(JSON.stringify(newPath));
+  }
+
+  /**
+   * Called when the user finished drawing a path in the grid.
+   */
+  async function onPathDone() {
+    /*
+    Build Prolog query, which will be like:
+    join([
+          64,4,64,32,16,
+          64,8,16,2,32,
+          2,4,64,64,2,
+          2,4,32,16,4,
+          16,4,16,16,16,
+          16,64,2,32,32,
+          64,2,64,32,64,
+          32,2,64,32,4
+          ], 
+          5, 
+          [[2, 0], [3, 0], [4, 1], [3, 1], [2, 1], [1, 1], [1, 2], [0, 3]],
+          RGrids
+        ).
+    */
+    const gridS = JSON.stringify(grid);
+    const pathS = JSON.stringify(path);
+    const queryS = "connect(" + gridS + "," + numOfColumns + "," + pathS + ", Effects)";
     setWaiting(true);
-    const response = await pengine!.query(queryS);
+    const response = await pengine.query(queryS);
     if (response) {
-      setSquares(response['BoardRes']);
-      setXIsNext(!xIsNext);
-      setStatus(response['Status']);
+      setPath([]);
+      animateEffect(response['Effects']);
+    } else {
+      setWaiting(false);
     }
-    setWaiting(false);
+  }
+
+  /**
+   * Displays each grid of the sequence as the current grid in 1sec intervals, and considers the other effect information.
+   * @param effects The list of effects to be animated.
+   */
+  async function animateEffect(effects: EffectTerm[]) {
+    const effect = effects[0];
+    const [effectGrid, effectInfo] = effect.args;
+    setGrid(effectGrid);
+    effectInfo.forEach((effectInfoItem) => {
+      const { functor, args } = effectInfoItem;
+      switch (functor) {
+        case 'achieved':
+          setObjectives(prev => {
+            const newObjectives = { ...prev };
+            args.forEach(([block, value]: [CellContent, number]) => {
+              newObjectives[block] = value;
+            });
+            return newObjectives;
+          });
+          break;
+        default:
+          break;
+      }
+    });
+    const restEffects = effects.slice(1);
+    if (restEffects.length === 0) {
+      setWaiting(false);
+      return;
+    }
+    await delay(1000);
+    animateEffect(restEffects);
   }
 
   // Don't display anything until the Prolog server is ready (alternatively render a loading UI).
@@ -43,20 +143,18 @@ function Game() {
     return null;
   }
 
-  let statusText: string;
-  if (status === '?') {
-    statusText = 'Next player: ' + (xIsNext ? 'X' : 'O');
-  } else if (status === 'T') {
-    statusText = 'Tie!'
-  } else {
-    statusText = 'Winner: ' + status;
-  }
   return (
     <div className="game">
-      <Board squares={squares} onSquareClick={i => handleSquareClick(i)} />
-      <div className="game-info">
-        {statusText}
+      <div className="header">
+        <div className="score">{JSON.stringify(objectives)}</div>
       </div>
+      <Board
+        grid={grid}
+        numOfColumns={numOfColumns!}
+        path={path}
+        onPathChange={onPathChange}
+        onDone={onPathDone}
+      />      
     </div>
   );
 }
