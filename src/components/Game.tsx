@@ -3,7 +3,18 @@ import PengineClient, { PrologTerm } from '../services/PengineClient';
 import Board from './Board';
 import { delay } from './util';
 
-export const colors = ["r", "v", "p", "a"];
+export const colors = ["r", "c", "v", "p", "a"];
+
+export function colorToCss(color: typeof colors[number]): string {
+  switch (color) {
+    case "r": return "#e84d60";
+    case "c": return "#7bbdc9";
+    case "v": return "#2cac75";
+    case "p": return "#a4547d";
+    case "a": return "#fecd6c";
+    default: return "black";
+  }
+}
 
 export type CellContent = (typeof colors[number]) | "-" | "~";
 
@@ -143,18 +154,19 @@ function Game() {
     return null;
   }
 
+  if (grid === null) {
+    return null;
+  }
+
   return (
     <div className="game">
-      <div className="header">
-        <div className="score">{JSON.stringify(objectives)}</div>
-      </div>
       <Board
         grid={grid}
         numOfColumns={numOfColumns!}
         path={path}
         onPathChange={onPathChange}
         onDone={onPathDone}
-      />      
+      />
     </div>
   );
 }

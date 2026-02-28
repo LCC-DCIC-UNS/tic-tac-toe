@@ -1,3 +1,5 @@
+:- module(init, [ init/3 ]).
+
 /**
  * init(-Grid, -NumOfColumns, -Goals).
  * 

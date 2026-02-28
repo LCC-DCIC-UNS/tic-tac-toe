@@ -42,3 +42,8 @@ next-env.d.ts
 
 # pengines
 passwd
+
+# skills
+skills-lock.json
+.agents
+.claude
