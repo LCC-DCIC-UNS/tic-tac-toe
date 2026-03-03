@@ -11,11 +11,15 @@ interface BoardProps {
     path: number[];
     onPathChange: (path: number[]) => void;
     onDone: () => void;
+    readonly?: boolean;
 }
 
-function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
+function Board({ grid, numOfColumns, path, onPathChange, onDone, readonly }: BoardProps) {
 
     function onDotDown(pos: number) {
+        if (readonly) {
+            return;
+        }
         if (path.length === 0) {    // Clicked the first square, so init the path with that square.
             onPathChange([pos]);
         }

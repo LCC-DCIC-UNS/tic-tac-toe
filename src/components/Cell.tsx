@@ -10,23 +10,27 @@ interface CellProps {
 
 function Cell({ value, onMouseEnter, onMouseDown }: CellProps) {
 
-    function Content({ cellContent }: { cellContent: CellContent }) {
+    const content = value.map((cellContent, i) => {
         switch (cellContent) {
-            case "~": return <div className={styles.water} />;
-            case "-": return <div className={styles.empty} />;
-            default: return <div className={styles.color} style={{ backgroundColor: colorToCss(cellContent) }} />;
+            case "~": return <div className={styles.water} key={i} />;
+            case "-": return <div className={styles.empty} key={i} />;
+            default: return (
+                <button
+                    className={styles.color}
+                    onMouseDown={onMouseDown}
+                    onMouseEnter={onMouseEnter}
+                    key={i}
+                >
+                    <div style={{ backgroundColor: colorToCss(cellContent) }} />
+                </button>
+            );
         }
-    }
+    });
+
     return (
-        <button
-            className={styles.cell}
-            onMouseDown={onMouseDown}
-            onMouseEnter={onMouseEnter}
-        >
-            {value.map((cellContent, i) => (
-                <Content cellContent={cellContent} key={i} />
-            ))}
-        </button>
+        <div className={styles.cell}>
+            {content}
+        </div>
     );
 }
 

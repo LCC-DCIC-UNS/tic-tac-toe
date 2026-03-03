@@ -3,7 +3,8 @@ import PengineClient, { PrologTerm } from '../services/PengineClient';
 import Board from './Board';
 import { delay } from './util';
 import styles from './Game.module.css';
-import { CellContent, Grid } from './model';
+import { CellContent, Grid, Objectives } from './model';
+import { useHistory } from './helpers';
 
 type EffectTerm = PrologTerm & {
   functor: "effect";
@@ -17,10 +18,6 @@ type NewBlockTerm = PrologTerm & {
   args: [CellContent, number][];
 }
 
-type Objectives = {
-  [key in CellContent]?: number;
-}
-
 function Game() {
   // State
   const [pengine, setPengine] = useState<any>(null);
@@ -29,6 +26,8 @@ function Game() {
   const [objectives, setObjectives] = useState<Objectives>({});
   const [path, setPath] = useState<number[]>([]);
   const [waiting, setWaiting] = useState(false);
+
+  const { grid: historyGrid, objectives: historyObjectives } = useHistory({ grid: grid!, objectives, waiting });
 
   useEffect(() => {
     // This is executed just once, after the first render.
@@ -77,18 +76,17 @@ function Game() {
   async function onPathDone() {
     /*
     Build Prolog query, which will be like:
-    join([
-          64,4,64,32,16,
-          64,8,16,2,32,
-          2,4,64,64,2,
-          2,4,32,16,4,
-          16,4,16,16,16,
-          16,64,2,32,32,
-          64,2,64,32,64,
-          32,2,64,32,4
-          ], 
-          5, 
-          [[2, 0], [3, 0], [4, 1], [3, 1], [2, 1], [1, 1], [1, 2], [0, 3]],
+    connect([
+            [-], [r], [c], [p], [-], [-], [-], [-],	
+            [c], [y], [g], [p], [r], [-], [-], [-],	
+            [r], [r], [g], [y], [r], [g], [-], [-],	
+            [y], [c], [-], [y], [c], [g], [g], [-],	
+            [y, ~], [c, ~], [-], [g], [c, ~], [y, ~], [c, ~], [c],	
+            [c, ~], [c, ~], [-], [g, ~], [c, ~], [y, ~], [c, ~], [-],	
+            [c, ~], [y, ~], [g, ~], [g, ~], [c, ~], [c, ~], [-], [-],	
+            [c, ~], [y, ~], [y, ~], [y, ~], [y, ~], [-], [-], [-],	
+            [-], [y, ~], [y, ~], [y], [-], [-], [-], [-]
+            ], 8, [21, 29, 30],
           RGrids
         ).
     */
@@ -97,10 +95,11 @@ function Game() {
     const queryS = "connect(" + gridS + "," + numOfColumns + "," + pathS + ", Effects)";
     setWaiting(true);
     const response = await pengine.query(queryS);
+    setPath([]);
     if (response) {
-      setPath([]);
-      animateEffect(response['Effects']);
+      animateEffects(response['Effects']);
     } else {
+      console.log("Prolog query failed")
       setWaiting(false);
     }
   }
@@ -109,8 +108,18 @@ function Game() {
    * Displays each grid of the sequence as the current grid in 1sec intervals, and considers the other effect information.
    * @param effects The list of effects to be animated.
    */
-  async function animateEffect(effects: EffectTerm[]) {
-    const effect = effects[0];
+  async function animateEffects(effects: EffectTerm[]) {
+    applyEffect(effects[0]);
+    const restEffects = effects.slice(1);
+    if (restEffects.length === 0) {
+      setWaiting(false);
+      return;
+    }
+    await delay(1000);
+    animateEffects(restEffects);
+  }
+
+  function applyEffect(effect: EffectTerm) {
     const [effectGrid, effectInfo] = effect.args;
     setGrid(effectGrid);
     effectInfo.forEach((effectInfoItem) => {
@@ -120,6 +129,9 @@ function Game() {
           setObjectives(prev => {
             const newObjectives = { ...prev };
             args[0].forEach(([block, value]: [CellContent, number]) => {
+              if (newObjectives[block] === undefined) {
+                return;
+              }
               newObjectives[block] = Math.max(newObjectives[block]! - value, 0);
             });
             return newObjectives;
@@ -129,13 +141,6 @@ function Game() {
           break;
       }
     });
-    const restEffects = effects.slice(1);
-    if (restEffects.length === 0) {
-      setWaiting(false);
-      return;
-    }
-    await delay(1000);
-    animateEffect(restEffects);
   }
 
   // Don't display anything until the Prolog server is ready (alternatively render a loading UI).
@@ -150,14 +155,15 @@ function Game() {
   return (
     <div className={styles.game}>
       <div className={styles.header}>
-        {Object.entries(objectives).map(([key, value]) => `${key} ${value}`).join(' | ')}
+        {Object.entries(historyObjectives ?? objectives).map(([key, value]) => `${key} ${value}`).join(' | ')}
       </div>
       <Board
-        grid={grid}
+        grid={historyGrid ?? grid}
         numOfColumns={numOfColumns!}
         path={path}
         onPathChange={onPathChange}
         onDone={onPathDone}
+        readonly={waiting || historyGrid !== undefined}
       />
     </div>
   );

@@ -14,3 +14,7 @@ export function colorToCss(color: typeof colors[number]): string {
 export type CellContent = (typeof colors[number]) | "-" | "~";
 
 export type Grid = CellContent[][];
+
+export type Objectives = {
+  [key in CellContent]?: number;
+}
