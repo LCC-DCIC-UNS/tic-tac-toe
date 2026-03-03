@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { colors, colorToCss, Grid } from './Game';
-import Square from './Square';
+import Cell from './Cell';
 import { connectable, connectionInPath, isAdyacent } from './util';
 import Connector from './Connector';
+import styles from './Board.module.css';
 
 interface BoardProps {
     grid: Grid;
@@ -29,18 +30,21 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
     }
 
     function onSquareHover(pos: number) {
-        if (path.length === 0) {    // Ignore square hover if not collecting a path.
+        if (path.length === 0) {    // Ignore if not collecting a path.
             return;
         }
-        if (!grid[pos].some(content => colors.includes(content))) {    // Only consider hovering squares with a dot.
+        if (!grid[pos].some(content => colors.includes(content))) {    // Ignore hovering squares with no dot. TODO: replace by isDot function.
             return;
         }
-        if (isAdyacent(pos, path[path.length - 1], numOfColumns)) {
-            if (path.length > 1 && pos === path[path.length - 2]) {  // Remove the last square in the path if returned to the previous one                
-                onPathChange(path.slice(0, path.length - 1));
-            } else if (!path.includes(pos) && connectable(pos, path[path.length - 1], grid)) {   // Add a square to the path if adyacent, not already in the path, and equal or next power than the last in the path
-                onPathChange(path.concat([pos]));   // Add a square to the path if adyacent, not already in the path, and equal or next power than the last in the path                
-            }
+        if (!isAdyacent(pos, path[path.length - 1], numOfColumns)) { // Ignore hovering non-adyacent squares.
+            return;
+        }
+        if (path.length > 1 && pos === path[path.length - 2]) {  // Remove the last square in the path if returned to the previous one                
+            onPathChange(path.slice(0, path.length - 1));
+        } else if (path.length > 2 && path.slice(0, path.length - 2).includes(path[path.length - 1])) { // Ignore hovering a square if you already got a closed path
+            return;
+        } else if (connectable(pos, path[path.length - 1], grid)) {   // Add a square to the path if adyacent, not already in the path, and equal or next power than the last in the path
+            onPathChange(path.concat([pos]));   // Add a square to the path if adyacent, not already in the path, and equal or next power than the last in the path                
         }
     }
 
@@ -50,26 +54,25 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
                 onPathChange([]);
             }
         });
-        // eslint-disable-next-line
     }, []);
 
     const numOfRows = grid.length / numOfColumns;
     return (
-        <div className="board">
-            <div className="cells" style={{ gridTemplateColumns: `repeat(${numOfColumns}, 30px)`, gridTemplateRows: `repeat(${numOfRows}, 30px)` }}>
-                {grid.map((num, pos) => {
+        <div className={styles.board} style={{ '--num-columns': numOfColumns, '--num-rows': numOfRows } as React.CSSProperties}>
+            <div className={styles.cells}>
+                {grid.map((cell, pos) => {
                     return (
-                        <Square
-                            value={num}
+                        <Cell
+                            value={cell}
                             onMouseDown={() => onDotDown(pos)}
                             onMouseUp={() => onDotUp()}
-                            onMouseEnter={() => onSquareHover(pos)}                            
+                            onMouseEnter={() => onSquareHover(pos)}
                             key={pos}
                         />
                     );
                 })}
             </div>
-            <div className="horizontalConnectors" style={{ gridTemplateColumns: `repeat(${numOfColumns - 1}, 30px)`, gridTemplateRows: `repeat(${numOfRows}, 30px)` }}>
+            <div className={styles.horizontalConnectors}>
                 {Array.from({ length: numOfRows * (numOfColumns - 1) }, (_, i) => {
                     const row = Math.floor(i / (numOfColumns - 1));
                     const column = i % (numOfColumns - 1);
@@ -81,10 +84,16 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
                     } else if (connectionInPath(posB, posA, path)) {
                         from = posB;
                     }
-                    return <Connector type={"horizontal"} color={from !== undefined ? colorToCss(grid[from].find(content => colors.includes(content))!) : undefined} key={i} />;
+                    return (
+                        <Connector
+                            type={"horizontal"}
+                            color={from !== undefined ? colorToCss(grid[from].find(content => colors.includes(content))!) : undefined}
+                            key={i}
+                        />
+                    );
                 })}
             </div>
-            <div className="verticalConnectors" style={{ gridTemplateColumns: `repeat(${numOfColumns}, 30px)`, gridTemplateRows: `repeat(${numOfRows - 1}, 30px)` }}>
+            <div className={styles.verticalConnectors}>
                 {Array.from({ length: (numOfRows - 1) * numOfColumns }, (_, i) => {
                     const row = Math.floor(i / numOfColumns);
                     const column = i % numOfColumns;
@@ -96,7 +105,13 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
                     } else if (connectionInPath(posB, posA, path)) {
                         from = posB;
                     }
-                    return <Connector type={"vertical"} color={from !== undefined ? colorToCss(grid[from].find(content => colors.includes(content))!) : undefined} key={i} />;
+                    return (
+                        <Connector
+                            type={"vertical"}
+                            color={from !== undefined ? colorToCss(grid[from].find(content => colors.includes(content))!) : undefined}
+                            key={i}
+                        />
+                    );
                 })}
             </div>
         </div>

@@ -1,15 +1,15 @@
 import { CellContent, colorToCss } from "./Game";
-import styles from "./Square.module.css";
+import styles from "./Cell.module.css";
 
 
-interface SquareProps {
+interface CellProps {
     value: CellContent[];
     onMouseEnter: () => void;
     onMouseUp: () => void;
     onMouseDown: () => void;
 }
 
-function Square({ value, onMouseEnter, onMouseUp, onMouseDown, inPath }: SquareProps) {
+function Cell({ value, onMouseEnter, onMouseUp, onMouseDown }: CellProps) {
 
     function Content({ cellContent }: { cellContent: CellContent }) {
         switch (cellContent) {
@@ -20,7 +20,7 @@ function Square({ value, onMouseEnter, onMouseUp, onMouseDown, inPath }: SquareP
     }
     return (
         <button
-            className={styles.square}
+            className={styles.cell}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
             onMouseEnter={onMouseEnter}
@@ -32,4 +32,4 @@ function Square({ value, onMouseEnter, onMouseUp, onMouseDown, inPath }: SquareP
     );
 }
 
-export default Square;
+export default Cell;

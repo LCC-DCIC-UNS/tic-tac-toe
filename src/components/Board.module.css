@@ -1,0 +1,25 @@
+.board {}
+
+.cells {
+    display: grid;
+    grid-template-columns: repeat(var(--num-columns), 30px);
+    grid-template-rows: repeat(var(--num-rows), 30px);
+}
+
+.horizontalConnectors {
+    position: absolute;
+    top: 20px;
+    margin: 0 15px;
+    display: grid;
+    grid-template-columns: repeat(calc(var(--num-columns) - 1), 30px);
+    grid-template-rows: repeat(var(--num-rows), 30px);
+}
+
+.verticalConnectors {
+    position: absolute;
+    top: 20px;
+    margin: 15px 0;
+    display: grid;
+    grid-template-columns: repeat(var(--num-columns), 30px);
+    grid-template-rows: repeat(calc(var(--num-rows) - 1), 30px);
+}

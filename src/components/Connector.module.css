@@ -1,0 +1,14 @@
+.connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connectorLine {
+  flex-grow: 1;
+  height: 8px;
+}
+
+.connectorLine.vertical {
+  transform: rotate(90deg);
+}

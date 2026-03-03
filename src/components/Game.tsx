@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import PengineClient, { PrologTerm } from '../services/PengineClient';
 import Board from './Board';
 import { delay } from './util';
+import styles from './Game.module.css';
 
 export const colors = ["r", "c", "v", "p", "a"];
 
@@ -159,7 +160,7 @@ function Game() {
   }
 
   return (
-    <div className="game">
+    <div className={styles.game}>
       <Board
         grid={grid}
         numOfColumns={numOfColumns!}

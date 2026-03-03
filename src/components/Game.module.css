@@ -1,0 +1,14 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  background: #3a5783;
+  align-items: center;
+}
+
+.header {
+  margin: 10px
+}
+
+.gameInfo {
+  margin-left: 20px;
+}

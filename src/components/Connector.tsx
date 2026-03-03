@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './Connector.module.css';
 
 interface ConnectorProps {
     type: "horizontal" | "vertical";
@@ -7,8 +8,8 @@ interface ConnectorProps {
 
 function Connector({ type, color }: ConnectorProps) {
     return (
-        <div className="connector">
-            <div className={"connectorLine " + type} style={{ background: color }} />
+        <div className={styles.connector}>
+            <div className={`${styles.connectorLine} ${type === 'vertical' ? styles.vertical : ''}`} style={{ background: color }} />
         </div>
     );
 }
