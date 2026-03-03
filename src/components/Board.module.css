@@ -1,4 +1,6 @@
-.board {}
+.board {
+    position: relative;
+}
 
 .cells {
     display: grid;
@@ -8,7 +10,7 @@
 
 .horizontalConnectors {
     position: absolute;
-    top: 20px;
+    top: 0;
     margin: 0 15px;
     display: grid;
     grid-template-columns: repeat(calc(var(--num-columns) - 1), 30px);
@@ -17,7 +19,7 @@
 
 .verticalConnectors {
     position: absolute;
-    top: 20px;
+    top: 0;
     margin: 15px 0;
     display: grid;
     grid-template-columns: repeat(var(--num-columns), 30px);

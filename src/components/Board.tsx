@@ -21,15 +21,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
         }
     }
 
-    function onDotUp() {
-        if (path.length === 1) {
-            onPathChange([]);
-        } else {
-            onDone();
-        }
-    }
-
-    function onSquareHover(pos: number) {
+    function onDotHover(pos: number) {
         if (path.length === 0) {    // Ignore if not collecting a path.
             return;
         }
@@ -49,6 +41,19 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
     }
 
     useEffect(() => {
+        function onUp() {
+            if (path.length === 0) return;  // Ignore if not collecting a path.
+            if (path.length === 1) {
+                onPathChange([]);
+            } else {
+                onDone();
+            }
+        }
+        window.addEventListener("mouseup", onUp);
+        return () => window.removeEventListener("mouseup", onUp);
+    }, [path, onPathChange, onDone]);
+
+    useEffect(() => {
         window.addEventListener("keydown", e => {
             if (e.key === "Escape") {
                 onPathChange([]);
@@ -65,8 +70,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone }: BoardProps) {
                         <Cell
                             value={cell}
                             onMouseDown={() => onDotDown(pos)}
-                            onMouseUp={() => onDotUp()}
-                            onMouseEnter={() => onSquareHover(pos)}
+                            onMouseEnter={() => onDotHover(pos)}
                             key={pos}
                         />
                     );

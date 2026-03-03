@@ -5,11 +5,10 @@ import styles from "./Cell.module.css";
 interface CellProps {
     value: CellContent[];
     onMouseEnter: () => void;
-    onMouseUp: () => void;
     onMouseDown: () => void;
 }
 
-function Cell({ value, onMouseEnter, onMouseUp, onMouseDown }: CellProps) {
+function Cell({ value, onMouseEnter, onMouseDown }: CellProps) {
 
     function Content({ cellContent }: { cellContent: CellContent }) {
         switch (cellContent) {
@@ -22,7 +21,6 @@ function Cell({ value, onMouseEnter, onMouseUp, onMouseDown }: CellProps) {
         <button
             className={styles.cell}
             onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
             onMouseEnter={onMouseEnter}
         >
             {value.map((cellContent, i) => (

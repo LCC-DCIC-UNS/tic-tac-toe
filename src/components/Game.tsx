@@ -52,7 +52,11 @@ function Game() {
     const response = await pengine!.query(queryS);
     setGrid(response['Grid']);
     setNumOfColumns(response['NumOfColumns']);
-    setObjectives(response['Goals']);
+    const objectives: Objectives = {};
+    response['Goals'].forEach(([block, value]: [CellContent, number]) => {
+      objectives[block] = value;
+    });
+    setObjectives(objectives);
   }
 
   /**
@@ -88,7 +92,7 @@ function Game() {
           RGrids
         ).
     */
-    const gridS = JSON.stringify(grid);
+    const gridS = JSON.stringify(grid).replaceAll('"', '');
     const pathS = JSON.stringify(path);
     const queryS = "connect(" + gridS + "," + numOfColumns + "," + pathS + ", Effects)";
     setWaiting(true);
@@ -115,8 +119,8 @@ function Game() {
         case 'achieved':
           setObjectives(prev => {
             const newObjectives = { ...prev };
-            args.forEach(([block, value]: [CellContent, number]) => {
-              newObjectives[block] = value;
+            args[0].forEach(([block, value]: [CellContent, number]) => {
+              newObjectives[block] = Math.max(newObjectives[block]! - value, 0);
             });
             return newObjectives;
           });
@@ -145,6 +149,9 @@ function Game() {
 
   return (
     <div className={styles.game}>
+      <div className={styles.header}>
+        {Object.entries(objectives).map(([key, value]) => `${key} ${value}`).join(' | ')}
+      </div>
       <Board
         grid={grid}
         numOfColumns={numOfColumns!}
