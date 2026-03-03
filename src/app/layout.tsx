@@ -3,7 +3,7 @@ import "./globals.css";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Tic-tac-toe"
+  title: "Two Dots",
 };
 
 export default function RootLayout({

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { colors, colorToCss, Grid } from './Game';
+import { colors, colorToCss, Grid } from './model';
 import Cell from './Cell';
-import { connectable, connectionInPath, isAdyacent } from './util';
+import { connectable, connectionInPath, isAdyacent } from './helpers';
 import Connector from './Connector';
 import styles from './Board.module.css';
 

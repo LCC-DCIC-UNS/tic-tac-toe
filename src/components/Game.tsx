@@ -3,23 +3,7 @@ import PengineClient, { PrologTerm } from '../services/PengineClient';
 import Board from './Board';
 import { delay } from './util';
 import styles from './Game.module.css';
-
-export const colors = ["r", "c", "v", "p", "a"];
-
-export function colorToCss(color: typeof colors[number]): string {
-  switch (color) {
-    case "r": return "#e84d60";
-    case "c": return "#7bbdc9";
-    case "v": return "#2cac75";
-    case "p": return "#a4547d";
-    case "a": return "#fecd6c";
-    default: return "black";
-  }
-}
-
-export type CellContent = (typeof colors[number]) | "-" | "~";
-
-export type Grid = CellContent[][];
+import { CellContent, Grid } from './model';
 
 type EffectTerm = PrologTerm & {
   functor: "effect";

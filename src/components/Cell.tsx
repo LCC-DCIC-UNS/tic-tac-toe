@@ -1,4 +1,4 @@
-import { CellContent, colorToCss } from "./Game";
+import { CellContent, colorToCss } from "./model";
 import styles from "./Cell.module.css";
 
 
