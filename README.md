@@ -14,7 +14,7 @@ Principales funcionalidades a ser contempladas:
 
 - <span style="color:#fc7f40">📌 **Grilla de puntos de colores conectables.**</span> El usuario debe poder seleccionar y conectar puntos adyacentes del mismo color para formar una jugada válida. Al completar la jugada, esos puntos desaparecen.
 
-- <span style="color:#fc7f40">📌 **Caída por gravedad de nuevos puntos.**</span> Luego de cada eliminación, los puntos por encima deben caer para ocupar espacios vacíos y deben generarse nuevos puntos en la parte superior para mantener la grilla completa.
+- <span style="color:#fc7f40">📌 **Caída por gravedad y generación de nuevos puntos.**</span> Luego de cada eliminación, los puntos por encima deben caer para ocupar espacios vacíos y deben generarse nuevos puntos en la parte superior para mantener la grilla completa.
 
 - <span style="color:#fc7f40">📌 **Objetivos de la partida.**</span> Cada nivel debe definir objetivos de cantidad de puntos eliminados por color, y el estado del juego debe reflejar el progreso en esos objetivos. En niveles con agua (ver requerimiento más abajo) también se puede establer como objetivo una cierta cantidad de agua a generar.
 
@@ -24,7 +24,8 @@ Principales funcionalidades a ser contempladas:
 
 - <span style="color:#fc7f40">📌 **Comportamiento de bombas.**</span> Las bombas deben caer por gravedad como cualquier otro elemento y, al explotar, eliminar un área de 3×3 centrada en su posición.
 
-- <span style="color:#fc7f40">📌 **Espacios / obstáculos.**</span> Deben contemplarse casilleros especiales de tipo obstáculo o espacio no utilizable, que afecten la conectividad y/o la caída según las reglas que definan.
+- <span style="color:#fc7f40">📌 **Espacios / obstáculos.**</span> Deben contemplarse casilleros especiales de tipo obstáculo o espacio no utilizable, éstos no pueden alojar puntos,
+y los puntos los atraviesan al caer por gravedad para ocupar el siguiente casillero disponible debajo de ellos, si es que existe.
 
 - <span style="color:#fc7f40">📌 **Mecánica de agua.**</span> El agua se expande al eliminar puntos junto a ella. Además, un nivel puede tener como objetivo extender el agua una cierta cantidad de casilleros.
 
