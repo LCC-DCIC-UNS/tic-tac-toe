@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { colors, colorToCss, Grid } from './model';
 import Cell from './Cell';
-import { connectable, connectionInPath, isAdyacent } from './helpers';
+import { connectable, connectionInPath, isAdyacent, isConnectableDot } from './helpers';
 import Connector from './Connector';
 import styles from './Board.module.css';
 
@@ -29,7 +29,7 @@ function Board({ grid, numOfColumns, path, onPathChange, onDone, readonly }: Boa
         if (path.length === 0) {    // Ignore if not collecting a path.
             return;
         }
-        if (!grid[pos].some(content => colors.includes(content))) {    // Ignore hovering squares with no dot. TODO: replace by isDot function.
+        if (!grid[pos].some(content => isConnectableDot(content))) {    // Ignore hovering squares with no dot.
             return;
         }
         if (!isAdyacent(pos, path[path.length - 1], numOfColumns)) { // Ignore hovering non-adyacent squares.

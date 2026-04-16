@@ -1,22 +1,10 @@
 import { useEffect, useState } from 'react';
-import PengineClient, { PrologTerm } from '../services/PengineClient';
+import PengineClient from '../services/PengineClient';
 import Board from './Board';
 import { delay } from './util';
 import styles from './Game.module.css';
-import { CellContent, Grid, Objectives } from './model';
+import { CellContent, Grid, Objectives, EffectTerm, EffectInfoTerm } from './model';
 import { useHistory } from './helpers';
-
-type EffectTerm = PrologTerm & {
-  functor: "effect";
-  args: [Grid, EffectInfoTerm[]];
-}
-
-type EffectInfoTerm = NewBlockTerm | PrologTerm;
-
-type NewBlockTerm = PrologTerm & {
-  functor: "achieved";
-  args: [CellContent, number][];
-}
 
 function Game() {
   // State
@@ -109,20 +97,19 @@ function Game() {
    * @param effects The list of effects to be animated.
    */
   async function animateEffects(effects: EffectTerm[]) {
-    applyEffect(effects[0]);
-    const restEffects = effects.slice(1);
-    if (restEffects.length === 0) {
-      setWaiting(false);
-      return;
+    for (let i = 0; i < effects.length; i++) {
+      applyEffect(effects[i]);
+      if (i < effects.length - 1) {
+        await delay(1000);
+      }
     }
-    await delay(1000);
-    animateEffects(restEffects);
+    setWaiting(false);
   }
 
   function applyEffect(effect: EffectTerm) {
     const [effectGrid, effectInfo] = effect.args;
     setGrid(effectGrid);
-    effectInfo.forEach((effectInfoItem) => {
+    effectInfo.forEach((effectInfoItem: EffectInfoTerm) => {
       const { functor, args } = effectInfoItem;
       switch (functor) {
         case 'achieved':

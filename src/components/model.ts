@@ -1,3 +1,5 @@
+import { PrologTerm } from '../services/PengineClient';
+
 export const colors = ["r", "c", "g", "p", "y"];
 
 export function colorToCss(color: typeof colors[number]): string {
@@ -17,4 +19,16 @@ export type Grid = CellContent[][];
 
 export type Objectives = {
   [key in CellContent]?: number;
+}
+
+export type EffectTerm = PrologTerm & {
+  functor: "effect";
+  args: [Grid, EffectInfoTerm[]];
+}
+
+export type EffectInfoTerm = AchievedTerm | PrologTerm;
+
+export type AchievedTerm = PrologTerm & {
+  functor: "achieved";
+  args: [CellContent, number][];
 }
